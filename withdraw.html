@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Withdraw your data</title>
+  <link rel="stylesheet" href="custom.css">
+  <script src="lib/jspsych-8.3.0.min.js"></script>
+  <script src="lib/plugin-pipe-0.6.0.min.js"></script>
+  <script src="config.js"></script>
+</head>
+<body class="withdraw-page">
+  <div class="consent-box withdraw-box" id="box"></div>
+  <script>
+  /* 论文 B · 撤回数据（伦理批件 MUST-FA-2026091：「提交後 14 日內，通過結束頁的鏈接撤回您的數據」）
+   * 结束页的链接形如 withdraw.html?c=<撤回码>；被试点「Withdraw my data」确认后，经 DataPipe 在「撤回」这个
+   * experiment 下存一个小文件 withdraw_<撤回码>_<时间>.csv（列 trial_type, session_code, withdrawn_at；
+   * trial_type 一列固定为 withdrawal——DataPipe 默认的数据校验要求有这一列，缺了会被拒收且无法找回）。
+   * B4_分析.py 的 deid 读到这些文件，剔除对应会话。撤回码是程序随机生成的 10 位码，与任何身份信息无关。
+   * config.js 里 datapipe.withdraw 未填时（或保存失败时），页面请参与者写邮件告知撤回码，由研究者手工补记。
+   */
+  (function () {
+    'use strict';
+    const cfg = window.EXP_CONFIG;
+    const P = new URLSearchParams(window.location.search);
+    const LOCAL = P.get('local') === '1';
+    const box = document.getElementById('box');
+    const CODE_RE = /^[A-Za-z0-9]{10}$/;
+    const WID = (cfg.datapipe && cfg.datapipe.withdraw) || '';
+    const READY = !!WID && !WID.startsWith('XXXX');
+    const esc = (t) => String(t).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    const fallback = (code) =>
+      '<p>Please write to ' + esc(cfg.contact_email) + ', quoting your ' +
+      'withdrawal code' + (code ? ' <span class="wcode">' + esc(code) + '</span>' : '') + '. We will remove your ' +
+      'data and confirm by reply.</p>';
+
+    function ask(code) {
+      box.innerHTML =
+        '<h3>Withdraw your data</h3>' +
+        '<p>You are about to withdraw the data from your session in the image rating study' +
+        (code ? ' (withdrawal code <span class="wcode">' + esc(code) + '</span>)' : '') + '. Your ratings will be ' +
+        'removed and will not be used in any analysis. Withdrawing has no consequences for you.</p>' +
+        (code ? '' : '<p><label for="wc">Your withdrawal code (shown on the final page of the study):</label><br>' +
+          '<input id="wc" type="text" maxlength="10" autocomplete="off" spellcheck="false"></p>') +
+        '<p><button id="go">Withdraw my data</button></p>' +
+        '<p id="msg"></p>' +
+        '<p class="small">Researcher: Caihong He (' + esc(cfg.contact_email) + '). Ethics approval number ' +
+        esc(cfg.ethics_ref) + ', Research Ethics Committee of the Faculty of Humanities and Arts, Macau University ' +
+        'of Science and Technology.</p>';
+      document.getElementById('go').addEventListener('click', () => {
+        const c = code || (document.getElementById('wc').value || '').trim();
+        const msg = document.getElementById('msg');
+        if (!CODE_RE.test(c)) { msg.innerHTML = '<span class="err">Please enter the 10-character code shown on the final page.</span>'; return; }
+        submit(c);
+      });
+    }
+
+    function done(code) {
+      box.innerHTML = '<h3>Your data will be removed</h3><p>Thank you for letting us know. The data from the session ' +
+        'with withdrawal code <span class="wcode">' + esc(code) + '</span> will be removed before any analysis. ' +
+        'You do not need to do anything else.</p>';
+    }
+
+    function failed(code) {
+      box.innerHTML = '<h3>Your request could not be recorded automatically</h3>' + fallback(code);
+    }
+
+    function submit(code) {
+      const btn = document.getElementById('go');
+      if (btn) { btn.disabled = true; btn.textContent = 'Sending…'; }
+      const csv = 'trial_type,session_code,withdrawn_at\nwithdrawal,' + code + ',' + new Date().toISOString() + '\n';
+      if (LOCAL) {
+        window.__WITHDRAW_CSV__ = csv;
+        box.innerHTML = '<h3>Test run</h3><p>In the live study this would record:</p><pre>' + esc(csv) + '</pre>';
+        return;
+      }
+      if (!READY || typeof jsPsychPipe === 'undefined') { failed(code); return; }
+      jsPsychPipe.saveData(WID, 'withdraw_' + code + '_' + Date.now() + '.csv', csv).then((r) => {
+        // 成功：{message}；已收下、稍后自动重传：{error: null}；同名文件已在：FILE_EXISTS（先前一次已存上）
+        const ok = !!r && typeof r === 'object' && !(r instanceof Error) && (!r.error || r.error === 'FILE_EXISTS');
+        if (ok) done(code); else failed(code);
+      }).catch(() => failed(code));
+    }
+
+    const c = (P.get('c') || '').trim();
+    ask(CODE_RE.test(c) ? c : '');
+  })();
+  </script>
+</body>
+</html>

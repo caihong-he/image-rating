@@ -1,0 +1,1519 @@
+{
+"version": "pilot",
+"seed": 20260921,
+"n_lists": 2,
+"lists": [
+{
+"list_id": "pilot_A",
+"practice": [
+"p001",
+"p063",
+"p034",
+"p042"
+],
+"trials": [
+{
+"kind": "rate",
+"id": "b0462"
+},
+{
+"kind": "rate",
+"id": "b0404"
+},
+{
+"kind": "rate",
+"id": "b0391"
+},
+{
+"kind": "rate",
+"id": "b0477"
+},
+{
+"kind": "rate",
+"id": "b0346"
+},
+{
+"kind": "rate",
+"id": "b0612"
+},
+{
+"kind": "rate",
+"id": "b0628"
+},
+{
+"kind": "rate",
+"id": "b0552"
+},
+{
+"kind": "rate",
+"id": "b0505"
+},
+{
+"kind": "rate",
+"id": "b0325"
+},
+{
+"kind": "rate",
+"id": "b0563"
+},
+{
+"kind": "rate",
+"id": "b0433"
+},
+{
+"kind": "check",
+"id": "p016",
+"target": 100
+},
+{
+"kind": "rate",
+"id": "b0378"
+},
+{
+"kind": "rate",
+"id": "b0414"
+},
+{
+"kind": "rate",
+"id": "b0524"
+},
+{
+"kind": "rate",
+"id": "b0474"
+},
+{
+"kind": "rate",
+"id": "b0600"
+},
+{
+"kind": "rate",
+"id": "b0629"
+},
+{
+"kind": "rate",
+"id": "b0359"
+},
+{
+"kind": "rate",
+"id": "b0647"
+},
+{
+"kind": "rate",
+"id": "b0454"
+},
+{
+"kind": "rate",
+"id": "b0520"
+},
+{
+"kind": "rate",
+"id": "b0598"
+},
+{
+"kind": "rate",
+"id": "b0374"
+},
+{
+"kind": "rate",
+"id": "b0478"
+},
+{
+"kind": "rate",
+"id": "b0410"
+},
+{
+"kind": "rate",
+"id": "b0569"
+},
+{
+"kind": "rate",
+"id": "b0393"
+},
+{
+"kind": "rate",
+"id": "b0479"
+},
+{
+"kind": "rate",
+"id": "b0599"
+},
+{
+"kind": "rate",
+"id": "b0528"
+},
+{
+"kind": "rate",
+"id": "b0442"
+},
+{
+"kind": "rate",
+"id": "b0555"
+},
+{
+"kind": "rate",
+"id": "b0632"
+},
+{
+"kind": "rate",
+"id": "b0354"
+},
+{
+"kind": "rate",
+"id": "b0427"
+},
+{
+"kind": "rate",
+"id": "b0543"
+},
+{
+"kind": "rate",
+"id": "b0536"
+},
+{
+"kind": "rate",
+"id": "b0610"
+},
+{
+"kind": "rate",
+"id": "b0639"
+},
+{
+"kind": "rate",
+"id": "b0390"
+},
+{
+"kind": "rate",
+"id": "b0429"
+},
+{
+"kind": "rate",
+"id": "b0444"
+},
+{
+"kind": "rate",
+"id": "b0486"
+},
+{
+"kind": "rate",
+"id": "b0345"
+},
+{
+"kind": "rate",
+"id": "b0400"
+},
+{
+"kind": "rate",
+"id": "b0468"
+},
+{
+"kind": "rate",
+"id": "b0554"
+},
+{
+"kind": "rate",
+"id": "b0619"
+},
+{
+"kind": "rate",
+"id": "b0507"
+},
+{
+"kind": "rate",
+"id": "b0482"
+},
+{
+"kind": "rate",
+"id": "b0604"
+},
+{
+"kind": "rate",
+"id": "b0381"
+},
+{
+"kind": "rate",
+"id": "b0329"
+},
+{
+"kind": "rate",
+"id": "b0509"
+},
+{
+"kind": "rate",
+"id": "b0493"
+},
+{
+"kind": "rate",
+"id": "b0379"
+},
+{
+"kind": "rate",
+"id": "b0436"
+},
+{
+"kind": "rate",
+"id": "b0561"
+},
+{
+"kind": "rate",
+"id": "b0578"
+},
+{
+"kind": "check",
+"id": "p059",
+"target": 100
+},
+{
+"kind": "rate",
+"id": "b0430"
+},
+{
+"kind": "rate",
+"id": "b0327"
+},
+{
+"kind": "rate",
+"id": "b0633"
+},
+{
+"kind": "rate",
+"id": "b0485"
+},
+{
+"kind": "rate",
+"id": "b0363"
+},
+{
+"kind": "rate",
+"id": "b0411"
+},
+{
+"kind": "rate",
+"id": "b0584"
+},
+{
+"kind": "rate",
+"id": "b0540"
+},
+{
+"kind": "rate",
+"id": "b0353"
+},
+{
+"kind": "rate",
+"id": "b0576"
+},
+{
+"kind": "rate",
+"id": "b0453"
+},
+{
+"kind": "rate",
+"id": "b0643"
+},
+{
+"kind": "rate",
+"id": "b0530"
+},
+{
+"kind": "rate",
+"id": "b0438"
+},
+{
+"kind": "rate",
+"id": "b0343"
+},
+{
+"kind": "rate",
+"id": "b0503"
+},
+{
+"kind": "rate",
+"id": "b0365"
+},
+{
+"kind": "rate",
+"id": "b0403"
+},
+{
+"kind": "rate",
+"id": "b0580"
+},
+{
+"kind": "rate",
+"id": "b0614"
+},
+{
+"kind": "rate",
+"id": "b0571"
+},
+{
+"kind": "rate",
+"id": "b0587"
+},
+{
+"kind": "rate",
+"id": "b0567"
+},
+{
+"kind": "rate",
+"id": "b0480"
+},
+{
+"kind": "rate",
+"id": "b0407"
+},
+{
+"kind": "rate",
+"id": "b0349"
+},
+{
+"kind": "rate",
+"id": "b0370"
+},
+{
+"kind": "rate",
+"id": "b0615"
+},
+{
+"kind": "rate",
+"id": "b0467"
+},
+{
+"kind": "rate",
+"id": "b0527"
+},
+{
+"kind": "rate",
+"id": "b0499"
+},
+{
+"kind": "rate",
+"id": "b0514"
+},
+{
+"kind": "rate",
+"id": "b0609"
+},
+{
+"kind": "rate",
+"id": "b0460"
+},
+{
+"kind": "rate",
+"id": "b0369"
+},
+{
+"kind": "rate",
+"id": "b0360"
+},
+{
+"kind": "rate",
+"id": "b0551"
+},
+{
+"kind": "rate",
+"id": "b0428"
+},
+{
+"kind": "rate",
+"id": "b0620"
+},
+{
+"kind": "rate",
+"id": "b0579"
+},
+{
+"kind": "rate",
+"id": "b0484"
+},
+{
+"kind": "rate",
+"id": "b0452"
+},
+{
+"kind": "rate",
+"id": "b0341"
+},
+{
+"kind": "rate",
+"id": "b0568"
+},
+{
+"kind": "rate",
+"id": "b0518"
+},
+{
+"kind": "rate",
+"id": "b0402"
+},
+{
+"kind": "rate",
+"id": "b0640"
+},
+{
+"kind": "rate",
+"id": "b0375"
+},
+{
+"kind": "check",
+"id": "p019",
+"target": 0
+},
+{
+"kind": "rate",
+"id": "b0504"
+},
+{
+"kind": "rate",
+"id": "b0422"
+},
+{
+"kind": "rate",
+"id": "b0648"
+},
+{
+"kind": "rate",
+"id": "b0392"
+},
+{
+"kind": "rate",
+"id": "b0328"
+},
+{
+"kind": "rate",
+"id": "b0516"
+},
+{
+"kind": "rate",
+"id": "b0593"
+},
+{
+"kind": "rate",
+"id": "b0541"
+},
+{
+"kind": "rate",
+"id": "b0445"
+},
+{
+"kind": "rate",
+"id": "b0613"
+},
+{
+"kind": "rate",
+"id": "b0538"
+},
+{
+"kind": "rate",
+"id": "b0408"
+},
+{
+"kind": "rate",
+"id": "b0396"
+},
+{
+"kind": "rate",
+"id": "b0546"
+},
+{
+"kind": "rate",
+"id": "b0447"
+},
+{
+"kind": "rate",
+"id": "b0592"
+},
+{
+"kind": "rate",
+"id": "b0496"
+},
+{
+"kind": "rate",
+"id": "b0335"
+},
+{
+"kind": "rate",
+"id": "b0413"
+},
+{
+"kind": "rate",
+"id": "b0455"
+},
+{
+"kind": "rate",
+"id": "b0641"
+},
+{
+"kind": "rate",
+"id": "b0347"
+},
+{
+"kind": "rate",
+"id": "b0517"
+},
+{
+"kind": "rate",
+"id": "b0549"
+},
+{
+"kind": "rate",
+"id": "b0384"
+},
+{
+"kind": "rate",
+"id": "b0476"
+},
+{
+"kind": "rate",
+"id": "b0594"
+},
+{
+"kind": "rate",
+"id": "b0559"
+},
+{
+"kind": "rate",
+"id": "b0581"
+},
+{
+"kind": "rate",
+"id": "b0420"
+},
+{
+"kind": "rate",
+"id": "b0337"
+},
+{
+"kind": "rate",
+"id": "b0510"
+},
+{
+"kind": "rate",
+"id": "b0500"
+},
+{
+"kind": "rate",
+"id": "b0464"
+},
+{
+"kind": "rate",
+"id": "b0636"
+},
+{
+"kind": "rate",
+"id": "b0367"
+},
+{
+"kind": "rate",
+"id": "b0622"
+},
+{
+"kind": "rate",
+"id": "b0492"
+},
+{
+"kind": "rate",
+"id": "b0457"
+},
+{
+"kind": "rate",
+"id": "b0608"
+},
+{
+"kind": "rate",
+"id": "b0417"
+},
+{
+"kind": "rate",
+"id": "b0388"
+},
+{
+"kind": "rate",
+"id": "b0336"
+},
+{
+"kind": "rate",
+"id": "b0575"
+},
+{
+"kind": "rate",
+"id": "b0531"
+},
+{
+"kind": "rate",
+"id": "b0631"
+},
+{
+"kind": "rate",
+"id": "b0439"
+},
+{
+"kind": "rate",
+"id": "b0368"
+},
+{
+"kind": "check",
+"id": "p052",
+"target": 0
+},
+{
+"kind": "rate",
+"id": "b0487"
+},
+{
+"kind": "rate",
+"id": "b0556"
+},
+{
+"kind": "rate",
+"id": "b0533"
+},
+{
+"kind": "rate",
+"id": "b0424"
+},
+{
+"kind": "rate",
+"id": "b0606"
+},
+{
+"kind": "rate",
+"id": "b0356"
+},
+{
+"kind": "repeat",
+"id": "b0485"
+},
+{
+"kind": "repeat",
+"id": "b0599"
+},
+{
+"kind": "repeat",
+"id": "b0633"
+},
+{
+"kind": "repeat",
+"id": "b0346"
+},
+{
+"kind": "repeat",
+"id": "b0551"
+},
+{
+"kind": "repeat",
+"id": "b0403"
+},
+{
+"kind": "repeat",
+"id": "b0640"
+},
+{
+"kind": "repeat",
+"id": "b0452"
+},
+{
+"kind": "repeat",
+"id": "b0378"
+},
+{
+"kind": "repeat",
+"id": "b0608"
+},
+{
+"kind": "repeat",
+"id": "b0480"
+},
+{
+"kind": "repeat",
+"id": "b0536"
+}
+],
+"natural": [
+"wb12",
+"wb10",
+"wb19",
+"wb06",
+"wb02",
+"wb03",
+"wb07",
+"wb14",
+"wb26",
+"wb18",
+"wb01",
+"wb24",
+"wb23",
+"wb09",
+"wb15",
+"wb04",
+"wb13",
+"wb17",
+"wb21",
+"wb08",
+"wb05",
+"wb20",
+"wb25",
+"wb27",
+"wb22",
+"wb11",
+"wb16"
+]
+},
+{
+"list_id": "pilot_B",
+"practice": [
+"p001",
+"p063",
+"p034",
+"p042"
+],
+"trials": [
+{
+"kind": "rate",
+"id": "b0602"
+},
+{
+"kind": "rate",
+"id": "b0506"
+},
+{
+"kind": "rate",
+"id": "b0625"
+},
+{
+"kind": "rate",
+"id": "b0565"
+},
+{
+"kind": "rate",
+"id": "b0502"
+},
+{
+"kind": "rate",
+"id": "b0434"
+},
+{
+"kind": "rate",
+"id": "b0401"
+},
+{
+"kind": "rate",
+"id": "b0331"
+},
+{
+"kind": "rate",
+"id": "b0389"
+},
+{
+"kind": "rate",
+"id": "b0511"
+},
+{
+"kind": "rate",
+"id": "b0405"
+},
+{
+"kind": "rate",
+"id": "b0560"
+},
+{
+"kind": "check",
+"id": "p016",
+"target": 100
+},
+{
+"kind": "rate",
+"id": "b0373"
+},
+{
+"kind": "rate",
+"id": "b0472"
+},
+{
+"kind": "rate",
+"id": "b0583"
+},
+{
+"kind": "rate",
+"id": "b0443"
+},
+{
+"kind": "rate",
+"id": "b0624"
+},
+{
+"kind": "rate",
+"id": "b0351"
+},
+{
+"kind": "rate",
+"id": "b0386"
+},
+{
+"kind": "rate",
+"id": "b0532"
+},
+{
+"kind": "rate",
+"id": "b0432"
+},
+{
+"kind": "rate",
+"id": "b0471"
+},
+{
+"kind": "rate",
+"id": "b0545"
+},
+{
+"kind": "rate",
+"id": "b0339"
+},
+{
+"kind": "rate",
+"id": "b0585"
+},
+{
+"kind": "rate",
+"id": "b0646"
+},
+{
+"kind": "rate",
+"id": "b0466"
+},
+{
+"kind": "rate",
+"id": "b0326"
+},
+{
+"kind": "rate",
+"id": "b0553"
+},
+{
+"kind": "rate",
+"id": "b0529"
+},
+{
+"kind": "rate",
+"id": "b0423"
+},
+{
+"kind": "rate",
+"id": "b0497"
+},
+{
+"kind": "rate",
+"id": "b0634"
+},
+{
+"kind": "rate",
+"id": "b0364"
+},
+{
+"kind": "rate",
+"id": "b0446"
+},
+{
+"kind": "rate",
+"id": "b0596"
+},
+{
+"kind": "rate",
+"id": "b0435"
+},
+{
+"kind": "rate",
+"id": "b0338"
+},
+{
+"kind": "rate",
+"id": "b0562"
+},
+{
+"kind": "rate",
+"id": "b0638"
+},
+{
+"kind": "rate",
+"id": "b0425"
+},
+{
+"kind": "rate",
+"id": "b0494"
+},
+{
+"kind": "rate",
+"id": "b0519"
+},
+{
+"kind": "rate",
+"id": "b0395"
+},
+{
+"kind": "rate",
+"id": "b0588"
+},
+{
+"kind": "rate",
+"id": "b0459"
+},
+{
+"kind": "rate",
+"id": "b0627"
+},
+{
+"kind": "rate",
+"id": "b0544"
+},
+{
+"kind": "rate",
+"id": "b0409"
+},
+{
+"kind": "rate",
+"id": "b0491"
+},
+{
+"kind": "rate",
+"id": "b0385"
+},
+{
+"kind": "rate",
+"id": "b0508"
+},
+{
+"kind": "rate",
+"id": "b0358"
+},
+{
+"kind": "rate",
+"id": "b0601"
+},
+{
+"kind": "rate",
+"id": "b0448"
+},
+{
+"kind": "rate",
+"id": "b0350"
+},
+{
+"kind": "rate",
+"id": "b0589"
+},
+{
+"kind": "rate",
+"id": "b0550"
+},
+{
+"kind": "rate",
+"id": "b0475"
+},
+{
+"kind": "rate",
+"id": "b0526"
+},
+{
+"kind": "check",
+"id": "p059",
+"target": 0
+},
+{
+"kind": "rate",
+"id": "b0630"
+},
+{
+"kind": "rate",
+"id": "b0399"
+},
+{
+"kind": "rate",
+"id": "b0380"
+},
+{
+"kind": "rate",
+"id": "b0577"
+},
+{
+"kind": "rate",
+"id": "b0470"
+},
+{
+"kind": "rate",
+"id": "b0412"
+},
+{
+"kind": "rate",
+"id": "b0366"
+},
+{
+"kind": "rate",
+"id": "b0618"
+},
+{
+"kind": "rate",
+"id": "b0557"
+},
+{
+"kind": "rate",
+"id": "b0334"
+},
+{
+"kind": "rate",
+"id": "b0449"
+},
+{
+"kind": "rate",
+"id": "b0522"
+},
+{
+"kind": "rate",
+"id": "b0465"
+},
+{
+"kind": "rate",
+"id": "b0512"
+},
+{
+"kind": "rate",
+"id": "b0431"
+},
+{
+"kind": "rate",
+"id": "b0377"
+},
+{
+"kind": "rate",
+"id": "b0357"
+},
+{
+"kind": "rate",
+"id": "b0547"
+},
+{
+"kind": "rate",
+"id": "b0645"
+},
+{
+"kind": "rate",
+"id": "b0590"
+},
+{
+"kind": "rate",
+"id": "b0469"
+},
+{
+"kind": "rate",
+"id": "b0513"
+},
+{
+"kind": "rate",
+"id": "b0626"
+},
+{
+"kind": "rate",
+"id": "b0456"
+},
+{
+"kind": "rate",
+"id": "b0591"
+},
+{
+"kind": "rate",
+"id": "b0382"
+},
+{
+"kind": "rate",
+"id": "b0355"
+},
+{
+"kind": "rate",
+"id": "b0566"
+},
+{
+"kind": "rate",
+"id": "b0398"
+},
+{
+"kind": "rate",
+"id": "b0489"
+},
+{
+"kind": "rate",
+"id": "b0333"
+},
+{
+"kind": "rate",
+"id": "b0463"
+},
+{
+"kind": "rate",
+"id": "b0642"
+},
+{
+"kind": "rate",
+"id": "b0372"
+},
+{
+"kind": "rate",
+"id": "b0605"
+},
+{
+"kind": "rate",
+"id": "b0418"
+},
+{
+"kind": "rate",
+"id": "b0564"
+},
+{
+"kind": "rate",
+"id": "b0525"
+},
+{
+"kind": "rate",
+"id": "b0495"
+},
+{
+"kind": "rate",
+"id": "b0421"
+},
+{
+"kind": "rate",
+"id": "b0481"
+},
+{
+"kind": "rate",
+"id": "b0352"
+},
+{
+"kind": "rate",
+"id": "b0450"
+},
+{
+"kind": "rate",
+"id": "b0586"
+},
+{
+"kind": "rate",
+"id": "b0616"
+},
+{
+"kind": "rate",
+"id": "b0570"
+},
+{
+"kind": "rate",
+"id": "b0515"
+},
+{
+"kind": "rate",
+"id": "b0383"
+},
+{
+"kind": "check",
+"id": "p019",
+"target": 100
+},
+{
+"kind": "rate",
+"id": "b0437"
+},
+{
+"kind": "rate",
+"id": "b0572"
+},
+{
+"kind": "rate",
+"id": "b0376"
+},
+{
+"kind": "rate",
+"id": "b0637"
+},
+{
+"kind": "rate",
+"id": "b0501"
+},
+{
+"kind": "rate",
+"id": "b0603"
+},
+{
+"kind": "rate",
+"id": "b0523"
+},
+{
+"kind": "rate",
+"id": "b0406"
+},
+{
+"kind": "rate",
+"id": "b0340"
+},
+{
+"kind": "rate",
+"id": "b0397"
+},
+{
+"kind": "rate",
+"id": "b0451"
+},
+{
+"kind": "rate",
+"id": "b0361"
+},
+{
+"kind": "rate",
+"id": "b0582"
+},
+{
+"kind": "rate",
+"id": "b0539"
+},
+{
+"kind": "rate",
+"id": "b0473"
+},
+{
+"kind": "rate",
+"id": "b0542"
+},
+{
+"kind": "rate",
+"id": "b0617"
+},
+{
+"kind": "rate",
+"id": "b0342"
+},
+{
+"kind": "rate",
+"id": "b0621"
+},
+{
+"kind": "rate",
+"id": "b0597"
+},
+{
+"kind": "rate",
+"id": "b0537"
+},
+{
+"kind": "rate",
+"id": "b0344"
+},
+{
+"kind": "rate",
+"id": "b0483"
+},
+{
+"kind": "rate",
+"id": "b0416"
+},
+{
+"kind": "rate",
+"id": "b0440"
+},
+{
+"kind": "rate",
+"id": "b0394"
+},
+{
+"kind": "rate",
+"id": "b0558"
+},
+{
+"kind": "rate",
+"id": "b0371"
+},
+{
+"kind": "rate",
+"id": "b0548"
+},
+{
+"kind": "rate",
+"id": "b0441"
+},
+{
+"kind": "rate",
+"id": "b0419"
+},
+{
+"kind": "rate",
+"id": "b0330"
+},
+{
+"kind": "rate",
+"id": "b0644"
+},
+{
+"kind": "rate",
+"id": "b0488"
+},
+{
+"kind": "rate",
+"id": "b0534"
+},
+{
+"kind": "rate",
+"id": "b0595"
+},
+{
+"kind": "rate",
+"id": "b0362"
+},
+{
+"kind": "rate",
+"id": "b0573"
+},
+{
+"kind": "rate",
+"id": "b0332"
+},
+{
+"kind": "rate",
+"id": "b0461"
+},
+{
+"kind": "rate",
+"id": "b0635"
+},
+{
+"kind": "rate",
+"id": "b0611"
+},
+{
+"kind": "rate",
+"id": "b0498"
+},
+{
+"kind": "rate",
+"id": "b0415"
+},
+{
+"kind": "rate",
+"id": "b0535"
+},
+{
+"kind": "rate",
+"id": "b0607"
+},
+{
+"kind": "rate",
+"id": "b0521"
+},
+{
+"kind": "rate",
+"id": "b0458"
+},
+{
+"kind": "check",
+"id": "p052",
+"target": 0
+},
+{
+"kind": "rate",
+"id": "b0574"
+},
+{
+"kind": "rate",
+"id": "b0623"
+},
+{
+"kind": "rate",
+"id": "b0490"
+},
+{
+"kind": "rate",
+"id": "b0348"
+},
+{
+"kind": "rate",
+"id": "b0387"
+},
+{
+"kind": "rate",
+"id": "b0426"
+},
+{
+"kind": "repeat",
+"id": "b0415"
+},
+{
+"kind": "repeat",
+"id": "b0490"
+},
+{
+"kind": "repeat",
+"id": "b0355"
+},
+{
+"kind": "repeat",
+"id": "b0472"
+},
+{
+"kind": "repeat",
+"id": "b0398"
+},
+{
+"kind": "repeat",
+"id": "b0441"
+},
+{
+"kind": "repeat",
+"id": "b0558"
+},
+{
+"kind": "repeat",
+"id": "b0597"
+},
+{
+"kind": "repeat",
+"id": "b0366"
+},
+{
+"kind": "repeat",
+"id": "b0340"
+},
+{
+"kind": "repeat",
+"id": "b0537"
+},
+{
+"kind": "repeat",
+"id": "b0623"
+}
+],
+"natural": [
+"wb03",
+"wb11",
+"wb17",
+"wb21",
+"wb22",
+"wb18",
+"wb02",
+"wb27",
+"wb07",
+"wb26",
+"wb20",
+"wb12",
+"wb14",
+"wb19",
+"wb09",
+"wb01",
+"wb13",
+"wb24",
+"wb04",
+"wb15",
+"wb10",
+"wb08",
+"wb16",
+"wb23",
+"wb25",
+"wb06",
+"wb05"
+]
+}
+]
+}
