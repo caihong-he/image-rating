@@ -19,24 +19,30 @@
    * trial_type 一列固定为 withdrawal——DataPipe 默认的数据校验要求有这一列，缺了会被拒收且无法找回）。
    * B4_分析.py 的 deid 读到这些文件，剔除对应会话。撤回码是程序随机生成的 10 位码，与任何身份信息无关。
    * config.js 里 datapipe.withdraw 未填时（或保存失败时），页面请参与者写邮件告知撤回码，由研究者手工补记。
+   * 中文版（2026-10-01）：链接带 lang=zh 时显示简体中文（中文版程序的结束页会带上）；记录的内容与英文版相同。
    */
   (function () {
     'use strict';
     const cfg = window.EXP_CONFIG;
     const P = new URLSearchParams(window.location.search);
     const LOCAL = P.get('local') === '1';
+    const ZH = P.get('lang') === 'zh';
+    const L = (en, zh) => (ZH ? zh : en);
+    if (ZH) { document.documentElement.lang = 'zh-CN'; document.title = '撤回您的数据'; }
     const box = document.getElementById('box');
     const CODE_RE = /^[A-Za-z0-9]{10}$/;
     const WID = (cfg.datapipe && cfg.datapipe.withdraw) || '';
     const READY = !!WID && !WID.startsWith('XXXX');
     const esc = (t) => String(t).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-    const fallback = (code) =>
+    const fallback = (code) => L(
       '<p>Please write to ' + esc(cfg.contact_email) + ', quoting your ' +
       'withdrawal code' + (code ? ' <span class="wcode">' + esc(code) + '</span>' : '') + '. We will remove your ' +
-      'data and confirm by reply.</p>';
+      'data and confirm by reply.</p>',
+      '<p>请写信至 ' + esc(cfg.contact_email) + '，注明您的撤回码' + (code ? ' <span class="wcode">' + esc(code) +
+      '</span>' : '') + '。我们会删除您的数据，并回信确认。</p>');
 
     function ask(code) {
-      box.innerHTML =
+      box.innerHTML = L(
         '<h3>Withdraw your data</h3>' +
         '<p>You are about to withdraw the data from your session in the image rating study' +
         (code ? ' (withdrawal code <span class="wcode">' + esc(code) + '</span>)' : '') + '. Your ratings will be ' +
@@ -47,32 +53,50 @@
         '<p id="msg"></p>' +
         '<p class="small">Researcher: Caihong He (' + esc(cfg.contact_email) + '). Ethics approval number ' +
         esc(cfg.ethics_ref) + ', Research Ethics Committee of the Faculty of Humanities and Arts, Macau University ' +
-        'of Science and Technology.</p>';
+        'of Science and Technology.</p>',
+        '<h3>撤回您的数据</h3>' +
+        '<p>您即将撤回您在这项图片评分研究中的数据' +
+        (code ? '（撤回码 <span class="wcode">' + esc(code) + '</span>）' : '') + '。您的评分将被删除，不会用于任何分析。' +
+        '撤回不会对您产生任何影响。</p>' +
+        (code ? '' : '<p><label for="wc">您的撤回码（显示在研究的结束页上）：</label><br>' +
+          '<input id="wc" type="text" maxlength="10" autocomplete="off" spellcheck="false"></p>') +
+        '<p><button id="go">撤回我的数据</button></p>' +
+        '<p id="msg"></p>' +
+        '<p class="small">研究者：何彩虹（' + esc(cfg.contact_email) + '）。伦理批准编号 ' + esc(cfg.ethics_ref) +
+        '，澳门科技大学人文艺术学院研究伦理委员会。</p>');
       document.getElementById('go').addEventListener('click', () => {
         const c = code || (document.getElementById('wc').value || '').trim();
         const msg = document.getElementById('msg');
-        if (!CODE_RE.test(c)) { msg.innerHTML = '<span class="err">Please enter the 10-character code shown on the final page.</span>'; return; }
+        if (!CODE_RE.test(c)) {
+          msg.innerHTML = '<span class="err">' + L('Please enter the 10-character code shown on the final page.',
+            '请输入结束页上显示的 10 位撤回码。') + '</span>';
+          return;
+        }
         submit(c);
       });
     }
 
     function done(code) {
-      box.innerHTML = '<h3>Your data will be removed</h3><p>Thank you for letting us know. The data from the session ' +
+      box.innerHTML = L('<h3>Your data will be removed</h3><p>Thank you for letting us know. The data from the session ' +
         'with withdrawal code <span class="wcode">' + esc(code) + '</span> will be removed before any analysis. ' +
-        'You do not need to do anything else.</p>';
+        'You do not need to do anything else.</p>',
+        '<h3>您的数据将被删除</h3><p>谢谢您告知。撤回码为 <span class="wcode">' + esc(code) + '</span> 的那次作答，' +
+        '其数据会在任何分析之前删除。您无需再做任何事。</p>');
     }
 
     function failed(code) {
-      box.innerHTML = '<h3>Your request could not be recorded automatically</h3>' + fallback(code);
+      box.innerHTML = L('<h3>Your request could not be recorded automatically</h3>', '<h3>未能自动记录您的请求</h3>') +
+        fallback(code);
     }
 
     function submit(code) {
       const btn = document.getElementById('go');
-      if (btn) { btn.disabled = true; btn.textContent = 'Sending…'; }
+      if (btn) { btn.disabled = true; btn.textContent = L('Sending…', '正在发送…'); }
       const csv = 'trial_type,session_code,withdrawn_at\nwithdrawal,' + code + ',' + new Date().toISOString() + '\n';
       if (LOCAL) {
         window.__WITHDRAW_CSV__ = csv;
-        box.innerHTML = '<h3>Test run</h3><p>In the live study this would record:</p><pre>' + esc(csv) + '</pre>';
+        box.innerHTML = L('<h3>Test run</h3><p>In the live study this would record:</p>',
+          '<h3>测试运行</h3><p>正式运行时会记录：</p>') + '<pre>' + esc(csv) + '</pre>';
         return;
       }
       if (!READY || typeof jsPsychPipe === 'undefined') { failed(code); return; }

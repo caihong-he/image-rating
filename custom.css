@@ -48,3 +48,6 @@ input[type=range]:disabled { cursor: default; }
                               line-height: 1.5; font-size: 16px; border-radius: 4px; }
 #instr-overlay button { font-size: 15px; padding: 6px 16px; border: 1px solid #aaa; border-radius: 4px; background: #fff;
                         cursor: pointer; }
+/* 中文版（lang=zh，2026-10-01）：用简体中文字体（没有时退回系统的无衬线字体） */
+html:lang(zh) body, html:lang(zh) .jspsych-display-element, html:lang(zh) .withdraw-page {
+  font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", "Source Han Sans SC", sans-serif; }

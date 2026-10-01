@@ -12,6 +12,10 @@
  *                             用来检验「保存 → Zenodo」与撤回整条通道（数据照常标为测试会话）
  *   local=1                   本地测试：不连 DataPipe，结束时在页面上提供数据下载
  *   simulate=data-only|visual jsPsych 模拟运行（自动作答，只用于测试程序）
+ *   lang=zh                   中文版（简体，2026-10-01 起）：面向中文社交媒体（小红书、微博、微信等）。文字依获批的附件 03、07
+ *                             中文版（繁转简，用语按内地习惯：作業系統→操作系统、資訊→信息、位址→地址、桌上型→台式、
+ *                             資料→数据、「」→“”），结束页依英文版 S2 的具体说明译出。与英文版同一个 DataPipe 实验、同一套
+ *                             清单与计数；数据多一列 lang（en／zh），撤回链接带上 lang=zh。不给则为英文版
  *
  * 招募（2026-09-29 起）：公开招募志愿者、不付酬、全程匿名（见伦理修订申请第二份）。程序不接收任何平台编号；
  * 同一浏览器完成过一次后，在 localStorage 记一个不含个人信息的「已参加」标记（键 imgrate_done），再次打开时
@@ -45,6 +49,11 @@
   const SUBSET = (P.get('lists') || '').split(',').map((x) => parseInt(x, 10)).filter((x) => Number.isFinite(x));
   const LIST_FILE = VERSION === 'pilot' ? 'lists/pilot.json' : 'lists/main_' + COND + '_m' + cfg.m + '.json';
   const MINUTES = VERSION === 'pilot' ? 16 : (COND === 'band' ? 12 : 10);
+  // 语言：L(英文, 中文) 按 lang 取其一；英文版的文字一字未动
+  const LANG = P.get('lang') === 'zh' ? 'zh' : 'en';
+  const ZH = LANG === 'zh';
+  const L = (en, zh) => (ZH ? zh : en);
+  if (ZH) { document.documentElement.lang = 'zh-CN'; document.title = '图片评分研究'; }
 
   // DataPipe 的回应码：研究未开放 / 同名文件已在（= 先前一次已存上）/ 重试也无用的拒收
   const CLOSED_CODES = ['CONDITION_ASSIGNMENT_NOT_ACTIVE', 'EXPERIMENT_NOT_FOUND', 'EXPERIMENT_DATA_NOT_FOUND'];
@@ -52,12 +61,16 @@
   const CLOSED_AT_SAVE = ['SESSION_LIMIT_REACHED', 'DATA_COLLECTION_NOT_ACTIVE', 'EXPERIMENT_FINALIZED'];
   const FATAL_CODES = CLOSED_AT_SAVE.concat(['EXPERIMENT_NOT_FOUND', 'INVALID_DATA']);
 
-  const NOT_OPEN_HTML = '<h3>This study is not open at the moment</h3><p>Thank you for your interest. The study is ' +
+  const NOT_OPEN_HTML = L('<h3>This study is not open at the moment</h3><p>Thank you for your interest. The study is ' +
     'not accepting participants at the moment, so there is nothing to do here and no data have been stored.</p>' +
-    '<p>You can close this page now.</p>';
-  const NO_CONNECTION_HTML = '<h3>We are sorry</h3><p>This study cannot reach its data server from your current ' +
+    '<p>You can close this page now.</p>',
+    '<h3>本研究目前暂未开放</h3><p>感谢您的关注。本研究目前不接受参与者，因此这里无需作答，也没有保存任何数据。</p>' +
+    '<p>现在可以关闭本页面。</p>');
+  const NO_CONNECTION_HTML = L('<h3>We are sorry</h3><p>This study cannot reach its data server from your current ' +
     'internet connection, so your answers could not be saved. Please try again later or on a different network.</p>' +
-    '<p>No data have been stored. You can close this page now.</p>';
+    '<p>No data have been stored. You can close this page now.</p>',
+    '<h3>很抱歉</h3><p>在您当前的网络下，本研究连不上它的数据服务器，您的回答将无法保存。请稍后再试，或换一个网络再试' +
+    '（中国内地的网络大多连不上）。</p><p>没有保存任何数据。现在可以关闭本页面。</p>');
   const stopPage = (html) => { document.body.innerHTML = '<div class="instr done-box">' + html + '</div>'; };
 
   // 图像边长：方案规定 600 像素；窗口不够高时等比缩小，下限 400 像素（浏览器检查保证窗口至少能放下 400 像素）
@@ -67,8 +80,9 @@
 
   // 同一浏览器已经完成过：致谢并结束，不分配清单、不存任何数据（研究者自测与本地测试不受此限）
   if (!LOCAL && !TEST && alreadyDone()) {
-    stopPage('<h3>Thank you!</h3><p>It looks like this study has already been completed on this browser, so there ' +
-      'is no need to take part again.</p><p>You can close this page now.</p>');
+    stopPage(L('<h3>Thank you!</h3><p>It looks like this study has already been completed on this browser, so there ' +
+      'is no need to take part again.</p><p>You can close this page now.</p>',
+      '<h3>谢谢！</h3><p>这个浏览器上已经完成过本研究，无需再次参加。</p><p>现在可以关闭本页面。</p>'));
     return;
   }
   // 数据通道还没接上（config.js 里没有该版本的 DataPipe 编号）：对参与者一律显示「未开放」
@@ -98,7 +112,7 @@
   }
 
   if (!LOCAL && DATAPIPE_READY) {
-    stopPage('<p>Loading…</p>');
+    stopPage(L('<p>Loading…</p>', '<p>正在加载…</p>'));
     if (!(await pipeReachable())) { stopPage(NO_CONNECTION_HTML); return; }
     document.body.innerHTML = '';
   }
@@ -118,20 +132,20 @@
 
   const jsPsych = initJsPsych({
     show_progress_bar: true,
-    message_progress_bar: 'Progress',
+    message_progress_bar: L('Progress', '进度'),
     on_finish: () => { window.__EXP_DATA__ = jsPsych.data.get().values(); window.__EXP_DONE__ = true; },
   });
   if (LOCAL) window.__jsPsych = jsPsych;   // 仅本地测试时暴露，便于自动化检查
   const sessionCode = jsPsych.randomization.randomID(10);
   jsPsych.data.addProperties({
-    version: VERSION, cond: COND, recruit: 'volunteer', test: TEST ? 1 : 0, quick: QUICK ? 1 : 0,
+    version: VERSION, cond: COND, recruit: 'volunteer', lang: LANG, test: TEST ? 1 : 0, quick: QUICK ? 1 : 0,
     session_code: sessionCode, local: LOCAL ? 1 : 0, simulate: SIM || '', list_file: LIST_FILE,
     lists_param: SUBSET.join(' '), dpr: window.devicePixelRatio || 1, start_time: new Date().toISOString(),
   });
 
   const img = (id) => 'stim/' + id + '.webp';
-  const RATE_LABELS = ['Not at all beautiful', 'Extremely beautiful'];
-  const NAT_LABELS = ['Not at all', 'Completely'];
+  const RATE_LABELS = L(['Not at all beautiful', 'Extremely beautiful'], ['完全不好看', '非常好看']);
+  const NAT_LABELS = L(['Not at all', 'Completely'], ['完全不像', '完全像']);
 
   // 补发模式下把计数映射到指定的清单子集
   const pick = (c) => (SUBSET.length ? SUBSET[((c % SUBSET.length) + SUBSET.length) % SUBSET.length] : c);
@@ -147,28 +161,34 @@
   if (SIM) assignList(P.get('list') !== null ? parseInt(P.get('list'), 10) : pick(randomIndex()), 'simulate');
 
   /* ------------------------------------------------ 评分页上随时可看的指导语（获批研究计划：「可隨時回看指導語」） */
-  const INSTR_RATE = '<h3>Instructions</h3><p>For each image, please rate <b>how beautiful you find the image as a whole</b>. Click ' +
+  const INSTR_RATE = L('<h3>Instructions</h3><p>For each image, please rate <b>how beautiful you find the image as a whole</b>. Click ' +
     'on the slider to place the marker (from <i>Not at all beautiful</i> to <i>Extremely beautiful</i>), adjust it ' +
     'if you wish, then click <b>Next</b>. There are no right or wrong answers; we are interested in your own ' +
     'impression. Many images will look similar. Please rate each one on its own.</p><p>Now and then you will be ' +
     'asked to move the slider all the way to one end. This checks that the instructions are being read.</p>' +
-    '<p>You may close the page at any time without giving a reason.</p>';
-  const INSTR_NAT = '<h3>Instructions</h3><p>For each image, please rate <b>how much it looks like a natural ' +
+    '<p>You may close the page at any time without giving a reason.</p>',
+    '<h3>说明</h3><p>请对每一张图片，评出<b>您觉得这张图片整体有多好看</b>。点击滑轨放置标记（左端为“完全不好看”，' +
+    '右端为“非常好看”），可再调整，然后点“下一张”。没有对错，我们关心的是您自己的感受。很多张看起来会很像，' +
+    '请把每一张单独来看。</p><p>其间会有几次请您把滑杆拖到最左端或最右端，用来确认说明被读到。</p>' +
+    '<p>您可以随时关闭页面退出，无须说明理由。</p>');
+  const INSTR_NAT = L('<h3>Instructions</h3><p>For each image, please rate <b>how much it looks like a natural ' +
     'river</b>. Click on the slider to place the marker (from <i>Not at all</i> to <i>Completely</i>), adjust it if ' +
     'you wish, then click <b>Next</b>. There are no right or wrong answers.</p>' +
-    '<p>You may close the page at any time without giving a reason.</p>';
+    '<p>You may close the page at any time without giving a reason.</p>',
+    '<h3>说明</h3><p>请对每张打分：<b>它有多像一条自然的河流</b>。点击滑轨放置标记（左端为“完全不像”，右端为“完全像”），' +
+    '可再调整，然后点“下一张”。没有对错。</p><p>您可以随时关闭页面退出，无须说明理由。</p>');
   let instrViews = 0;
   function showInstrButton(html) {
     let btn = document.getElementById('instr-btn');
     let ov = document.getElementById('instr-overlay');
     if (!btn) {
       btn = document.createElement('button');
-      btn.id = 'instr-btn'; btn.type = 'button'; btn.textContent = 'Instructions';
+      btn.id = 'instr-btn'; btn.type = 'button'; btn.textContent = L('Instructions', '说明');
       document.body.appendChild(btn);
       ov = document.createElement('div');
       ov.id = 'instr-overlay';
       ov.innerHTML = '<div class="instr-panel"><div id="instr-text"></div><p><button type="button" id="instr-close">' +
-        'Close</button></p></div>';
+        L('Close', '关闭') + '</button></p></div>';
       document.body.appendChild(ov);
       btn.addEventListener('click', () => { instrViews += 1; ov.classList.add('open'); });
       ov.querySelector('#instr-close').addEventListener('click', () => ov.classList.remove('open'));
@@ -229,7 +249,7 @@
       labels: labels,
       min: 0, max: 100, step: 1, slider_start: 50,
       require_movement: true,
-      button_label: 'Next',
+      button_label: L('Next', '下一张'),
       render_on_canvas: true,
       prompt: () => '<div id="q-prompt" class="' + (task === 'check' ? 'check-prompt' : 'q-prompt') + '">' + promptFn() + '</div>',
       data: { task: task, position: index },
@@ -250,8 +270,9 @@
   // 同意书：志愿者版（2026-09-30），与伦理修订申请第二份所附的英文知情同意书逐句一致。
   // 9-30 晚：不列导师姓名（修订申请第一节第 2 条第 (4) 款：避免经联合国渠道来的参与者因导师职务感到压力）。
   // 改这里之前先改 `99 共用/预注册与伦理/论文B_知情同意与研究说明_v4_2026-09-30.md`。
+  // 中文版（10-01）：获批附件 07 的中文版逐句繁转简（用语按内地习惯，见文件头）；各段小标题后换行
   const N_BREAKS = 2;
-  const consentHTML =
+  const consentHTML = L(
     '<div class="consent-box">' +
     '<h3>Information and consent</h3>' +
     '<p><b>Study:</b> Framing and aesthetic evaluation of images<br>' +
@@ -285,9 +306,43 @@
     '14 days the data are de-identified and may already be part of the analysis, so we will not be able to locate ' +
     'your individual record.</p></div>' +
     '<p class="consent-check"><label><input type="checkbox" id="consent-cb"> I am 18 years or older and have normal ' +
-    'or corrected-to-normal vision; I have read and understood the above; I agree to take part.</label></p>';
+    'or corrected-to-normal vision; I have read and understood the above; I agree to take part.</label></p>',
+    '<div class="consent-box">' +
+    '<h3>研究说明与知情同意</h3>' +
+    '<p><b>研究名称：</b>图像取景与审美评价的关系<br>' +
+    '<b>研究者：</b>何彩虹，澳门科技大学人文艺术学院博士研究生<br>' +
+    '<b>联系方式：</b>' + cfg.contact_email + '<br>' +
+    '<b>伦理批准编号：</b>' + cfg.ethics_ref + '</p>' +
+    '<p><b>这项研究要做什么</b><br>我们想了解：同一张图片，取景（画面裁切）不同，人们觉得好看的程度会差多少。' +
+    '您将看到一系列图片，请对每一张给出您觉得好看的程度。没有正确答案，我们要的是您的直觉。</p>' +
+    '<p><b>需要多久</b><br>约 ' + MINUTES + ' 分钟，中间有两次可选的休息。请使用电脑（台式或笔记本）作答。</p>' +
+    '<p><b>参与是自愿的</b><br>本研究招募志愿者，不设报酬。参与与否完全由您决定；不参加或中途退出，都不会产生任何后果。' +
+    '我们不知道、也无从知道谁参加了。</p>' +
+    '<p><b>有什么风险</b><br>预期没有超出日常浏览图片的不适。图片均为中性内容。您可以随时关闭页面退出，无须说明理由。</p>' +
+    '<p><b>注意检查</b><br>其中少数几张会请您把滑杆拖到最左端或最右端，用来确认说明被读到。</p>' +
+    '<p><b>我们会收集什么</b><br>您对每张图片的评分与作答时间；为按正确尺寸显示图片所需的技术信息（窗口尺寸、浏览器与' +
+    '操作系统）；以及结束时几项可不答的问题（年龄段、性别、所在的世界地区、艺术或设计训练、是否曾参加过本研究' +
+    (VERSION === 'pilot' ? '，以及一道可不填的意见栏' : '') + '）。我们不收集您的姓名、联系方式、IP 地址或任何可以' +
+    '认出您的信息。为避免同一人重复作答，程序会在您的浏览器中记一个不含任何个人信息的“已参加”标记。</p>' +
+    '<p><b>数据会怎么用</b><br>用于学术研究与论文发表。论文发表时，我们会公开去标识化的评分数据，以便他人复核我们的结论。' +
+    '公开的数据中不含任何可识别您的信息。</p>' +
+    '<p><b>我可以退出吗</b><br>可以，随时。若在结束前关闭页面，您的回答一概不保存。您也可以在提交后 14 日内，通过结束页' +
+    '的链接撤回您的数据。14 日之后，由于数据已去标识化并可能已并入分析，我们将无法定位到您的单条记录。</p></div>' +
+    '<p class="consent-check"><label><input type="checkbox" id="consent-cb"> 我已年满 18 岁，视力正常或矫正后正常；' +
+    '我已阅读并理解上述说明；我自愿参加这项研究。</label></p>');
 
-  const instrPages = [
+  // 中文版指导语：获批附件 03 的中文第一、二页（繁转简）；第一页按附件 03 的说明补上描述刺激的一句（同英文版
+  // 「Each image shows part of a winding shape.」）
+  const instrPages = ZH ? [
+    '<div class="instr"><h3>说明</h3><p>您会看到一系列图片，每次一张。每张图片显示一个蜿蜒形状的一部分。</p>' +
+    '<p>请对每一张图片，评出<b>您觉得这张图片整体有多好看</b>。没有对错，我们关心的是您自己的感受。</p>' +
+    '<p>很多张看起来会很像，请把每一张单独来看。</p><p>任务约需 ' + MINUTES + ' 分钟，中途有' +
+    (N_BREAKS === 2 ? '两' : N_BREAKS) + '次可选的休息，您可以选择休息或直接继续。您可以随时关闭页面退出，' +
+    '无须说明理由。</p></div>',
+    '<div class="instr"><h3>如何作答</h3><p>每张图片下方有一条滑杆，左端为“完全不好看”，右端为“非常好看”。' +
+    '滑杆稍候才可操作：点击滑轨放置标记，可再调整，然后点“下一张”。</p><p>其间会有几次请您把滑杆拖到最左端或最右端，' +
+    '用来确认说明被读到。</p><p>评分页右下角的“说明”按钮可随时重新打开这些指导语。</p><p>先做四张练习。</p></div>',
+  ] : [
     '<div class="instr"><h3>Instructions</h3><p>In this study you will see a series of images. Each image shows ' +
     'part of a winding shape.</p><p>For each image, please rate <b>how beautiful you find the image as a whole</b>. There are no ' +
     'right or wrong answers; we are interested in your own impression.</p><p>Many images will look similar. ' +
@@ -310,17 +365,23 @@
       type: jsPsychBrowserCheck,
       features: ['width', 'height', 'browser', 'browser_version', 'mobile', 'os'],
       minimum_width: MIN_W, minimum_height: MIN_H,
-      window_resize_message: '<p>Your browser window is too small for this study. Please enlarge it (at least ' +
+      window_resize_message: L('<p>Your browser window is too small for this study. Please enlarge it (at least ' +
         '<span id="browser-check-min-width"></span> × <span id="browser-check-min-height"></span> pixels; now ' +
         '<span id="browser-check-actual-width"></span> × <span id="browser-check-actual-height"></span>). ' +
         'Full-screen mode (F11, or Control-Command-F on a Mac) usually helps.</p>',
+        '<p>浏览器窗口太小，无法进行本研究。请把窗口放大（至少 <span id="browser-check-min-width"></span> × ' +
+        '<span id="browser-check-min-height"></span> 像素；目前 <span id="browser-check-actual-width"></span> × ' +
+        '<span id="browser-check-actual-height"></span>）。全屏模式（F11；Mac 上按 Control-Command-F）通常有帮助。</p>'),
       inclusion_function: (d) => d.mobile === false,
       exclusion_message: (d) => (d.mobile
-        ? '<p>This study needs a laptop or desktop computer. Please open the link on a computer. Thank you!</p>'
-        : '<p>Your browser window is too small to show the images at the required size. Please open the link on a ' +
-          'computer with a larger screen. Thank you!</p>'),
+        ? L('<p>This study needs a laptop or desktop computer. Please open the link on a computer. Thank you!</p>',
+          '<p>本研究需要用电脑（台式或笔记本）完成。请在电脑上打开链接。谢谢！</p>')
+        : L('<p>Your browser window is too small to show the images at the required size. Please open the link on a ' +
+          'computer with a larger screen. Thank you!</p>',
+          '<p>浏览器窗口太小，无法按要求的尺寸显示图片。请在屏幕更大的电脑上打开链接。谢谢！</p>')),
       data: { task: 'browser' },
     });
+    if (ZH) timeline[timeline.length - 1].resize_fail_button_text = '窗口无法再放大';
   }
 
   // 同意：须勾选（获批方案「須主動勾選同意方可繼續」）后「Continue」才可点
@@ -328,7 +389,7 @@
   timeline.push({
     type: jsPsychHtmlButtonResponse,
     stimulus: consentHTML,
-    choices: ['Continue', 'I do not wish to take part'],
+    choices: L(['Continue', 'I do not wish to take part'], ['继续', '我不想参加']),
     data: { task: 'consent' },
     simulation_options: { data: { response: 0 } },
     on_load: () => {
@@ -336,15 +397,16 @@
       const btn = document.querySelector('#jspsych-html-button-response-btngroup button');
       if (cb && btn) {
         btn.disabled = true;
-        btn.title = 'Please tick the box above to continue';
+        btn.title = L('Please tick the box above to continue', '请先勾选上方的方框再继续');
         cb.addEventListener('change', () => { consentChecked = cb.checked; btn.disabled = !cb.checked; });
       }
     },
     on_finish: (d) => {
       d.consent_checked = consentChecked;
       if (d.response !== 0) {
-        jsPsych.abortExperiment('<p>Thank you. You have chosen not to take part.</p><p>No data from this page are ' +
-          'stored. You can close this page now.</p>');
+        jsPsych.abortExperiment(L('<p>Thank you. You have chosen not to take part.</p><p>No data from this page are ' +
+          'stored. You can close this page now.</p>',
+          '<p>谢谢。您选择了不参加。</p><p>本页面不会保存任何数据。现在可以关闭本页面。</p>'));
       }
     },
   });
@@ -374,29 +436,68 @@
     });
   }
 
+  // 预加载（10-01 改）：一轮里没加载上的图片自动再试，最多三轮（第二、三轮之前各等 3、6 秒）；三轮后仍有失败，才请参与者
+  // 检查网络后刷新。失败的文件用插件的 on_error 收集（插件自带的 failed_images 在新版 Chrome 里常常是空的）；某一轮超时则不知道
+  // 哪些没加载完，下一轮全部重来（已加载的走浏览器缓存，很快）。每轮在数据里记一行 preload（round、n_images、n_failed）
+  const allImages = () => [].concat(LIST.practice, LIST.trials.map((t) => t.id), LIST.natural).map(img);
+  const PRELOAD_ROUNDS = 3;
+  let preloadRound = 0, preloadPending = [], preloadFailedNow = [];
   timeline.push({
-    type: jsPsychPreload,
-    images: () => [].concat(LIST.practice, LIST.trials.map((t) => t.id), LIST.natural).map(img),
-    message: '<p>Loading images…</p>',
-    show_progress_bar: true,
-    max_load_time: 180000,
-    error_message: '<p>The images could not be loaded. Please check your connection and reload the page.</p>',
-    data: { task: 'preload' },
+    timeline: [
+      {
+        timeline: [{
+          type: jsPsychCallFunction, async: true,
+          func: (done) => { setTimeout(() => done(), 3000 * preloadRound); },
+          data: { task: 'preload_wait' },
+        }],
+        conditional_function: () => preloadRound > 0,
+      },
+      {
+        type: jsPsychPreload,
+        images: () => (preloadRound === 0 ? allImages() : preloadPending),
+        message: L('<p>Loading images…</p>', '<p>正在加载图片…</p>'),
+        show_progress_bar: true,
+        max_load_time: () => (preloadRound === 0 ? 180000 : 90000),
+        continue_after_error: true,
+        on_error: (file) => { preloadFailedNow.push(file); },
+        on_start: () => { preloadFailedNow = []; },
+        data: { task: 'preload' },
+        on_finish: (d) => {
+          d.round = preloadRound + 1;
+          d.n_images = new Set(preloadRound === 0 ? allImages() : preloadPending).size;
+          preloadPending = d.timeout ? allImages() : preloadFailedNow.slice();
+          d.n_failed = d.timeout ? -1 : preloadPending.length;
+          preloadRound += 1;
+        },
+      },
+    ],
+    loop_function: () => preloadPending.length > 0 && preloadRound < PRELOAD_ROUNDS,
+  });
+  timeline.push({
+    timeline: [{
+      type: jsPsychHtmlButtonResponse,
+      stimulus: L('<p>The images could not be loaded. Please check your connection and reload the page.</p>',
+        '<p>图片未能加载。请检查网络连接后刷新页面。</p>'),
+      choices: [],
+      data: { task: 'preload_failed' },
+    }],
+    conditional_function: () => preloadPending.length > 0,
   });
 
   timeline.push({
     type: jsPsychInstructions, pages: instrPages, show_clickable_nav: true,
-    button_label_next: 'Next', button_label_previous: 'Back', data: { task: 'instructions' },
+    button_label_next: L('Next', '下一页'), button_label_previous: L('Back', '上一页'), data: { task: 'instructions' },
   });
 
-  const ratePrompt = () => 'How beautiful is this image?';
+  const ratePrompt = () => L('How beautiful is this image?', '这张图片有多好看？');
   template.practice.forEach((_, i) => {
     timeline.push(sliderTrial('practice', () => LIST.practice[i], ratePrompt, RATE_LABELS, i));
   });
   timeline.push({
     type: jsPsychHtmlButtonResponse,
-    stimulus: '<div class="instr"><p>The practice is over. The main task starts now.</p></div>',
-    choices: ['Start'], data: { task: 'start' },
+    stimulus: L('<div class="instr"><p>The practice is over. The main task starts now.</p></div>',
+      '<div class="instr"><p>练习结束，正式任务现在开始。</p></div>'),
+    choices: L(['Start'], ['开始']), data: { task: 'start' },
   });
 
   const N = template.trials.length;
@@ -404,8 +505,9 @@
   template.trials.forEach((t, i) => {
     if (t.kind === 'check') {
       timeline.push(sliderTrial('check', () => LIST.trials[i].id,
-        () => '<b>Attention check:</b> for this image, please move the slider all the way to the <b>' +
+        () => L('<b>Attention check:</b> for this image, please move the slider all the way to the <b>' +
           (LIST.trials[i].target === 0 ? 'left' : 'right') + '</b> end.',
+          '<b>注意检查：</b>这一张请把滑杆拖到最<b>' + (LIST.trials[i].target === 0 ? '左' : '右') + '</b>端。'),
         RATE_LABELS, i, () => LIST.trials[i].target));
     } else {
       timeline.push(sliderTrial(t.kind, () => LIST.trials[i].id, ratePrompt, RATE_LABELS, i));
@@ -413,26 +515,30 @@
     if ((i + 1) % breakEvery === 0 && i + 1 < N) {
       timeline.push({
         type: jsPsychHtmlButtonResponse,
-        stimulus: '<div class="instr"><p>You may take a short break.</p><p>Click <b>Continue</b> when you are ready.</p></div>',
-        choices: ['Continue'], data: { task: 'break' },
+        stimulus: L('<div class="instr"><p>You may take a short break.</p><p>Click <b>Continue</b> when you are ready.</p></div>',
+          '<div class="instr"><p>您可以稍作休息。</p><p>准备好后点“继续”。</p></div>'),
+        choices: L(['Continue'], ['继续']), data: { task: 'break' },
       });
     }
   });
 
   timeline.push({
     type: jsPsychHtmlButtonResponse,
-    stimulus: '<div class="instr"><h3>Almost done</h3><p>You will now see ' + template.natural.length +
+    stimulus: L('<div class="instr"><h3>Almost done</h3><p>You will now see ' + template.natural.length +
       ' images, each showing a longer stretch of a winding shape.</p><p>For each one, please rate <b>how much it ' +
       'looks like a natural river</b>.</p></div>',
-    choices: ['Continue'], data: { task: 'natural_intro' },
+      '<div class="instr"><h3>快结束了</h3><p>接下来是 ' + template.natural.length + ' 张图，每张显示蜿蜒形状更长的一段。' +
+      '</p><p>请对每张打分：<b>它有多像一条自然的河流</b>。</p></div>'),
+    choices: L(['Continue'], ['继续']), data: { task: 'natural_intro' },
   });
   template.natural.forEach((_, i) => {
-    timeline.push(sliderTrial('natural', () => LIST.natural[i], () => 'How much does this look like a natural river?',
-      NAT_LABELS, i));
+    timeline.push(sliderTrial('natural', () => LIST.natural[i],
+      () => L('How much does this look like a natural river?', '这张图有多像一条自然的河流？'), NAT_LABELS, i));
   });
 
   const feedbackField = VERSION === 'pilot'
-    ? '<label>Was anything unclear, or did anything not work as expected? (optional)</label>' +
+    ? L('<label>Was anything unclear, or did anything not work as expected? (optional)</label>',
+      '<label>是否有不清楚或不如预期之处？（可不填）</label>') +
       '<textarea name="feedback" rows="3" cols="60"></textarea>'
     : '';
   // 背景问项：按获批的「各項均可跳過」——不设必答；年龄用年龄段；「所在地區」按联合国 M49 的地理分区（比国家更粗；
@@ -457,25 +563,51 @@
     ['pacific_islands', 'Pacific Islands'],
     ['na', 'Prefer not to say'],
   ];
+  // 中文版：同样的分区与示例国家（附件 03：「中文版以相同分區與示例國家的中文譯名呈現」）；存下的值与英文版相同
+  const REGIONS_ZH = {
+    eastern_asia: '东亚（如中国、日本、韩国、蒙古）',
+    south_eastern_asia: '东南亚（如印度尼西亚、菲律宾、新加坡、泰国、越南）',
+    southern_asia: '南亚（如孟加拉国、印度、伊朗、巴基斯坦、斯里兰卡）',
+    central_asia: '中亚（如哈萨克斯坦、乌兹别克斯坦）',
+    western_asia: '西亚（如以色列、沙特阿拉伯、土耳其、阿拉伯联合酋长国）',
+    northern_africa: '北非（如阿尔及利亚、埃及、摩洛哥）',
+    sub_saharan_africa: '撒哈拉以南非洲（如埃塞俄比亚、加纳、肯尼亚、尼日利亚、南非）',
+    northern_europe: '北欧（如北欧各国、爱尔兰、英国）',
+    western_europe: '西欧（如奥地利、法国、德国、荷兰、瑞士）',
+    southern_europe: '南欧（如希腊、意大利、葡萄牙、西班牙）',
+    eastern_europe: '东欧（如波兰、罗马尼亚、俄罗斯、乌克兰）',
+    northern_america: '北美（加拿大、美国）',
+    latin_america_caribbean: '拉丁美洲和加勒比（如阿根廷、巴西、墨西哥）',
+    australia_nz: '澳大利亚和新西兰',
+    pacific_islands: '太平洋岛屿',
+    na: '不愿透露',
+  };
+  const regionLabel = (v, t) => (ZH ? REGIONS_ZH[v] : t);
   timeline.push({
     type: jsPsychSurveyHtmlForm,
-    preamble: '<h3>A few questions about you</h3><p>All questions are optional.</p>',
+    preamble: L('<h3>A few questions about you</h3><p>All questions are optional.</p>',
+      '<h3>关于您的几个问题</h3><p>各项均可跳过。</p>'),
     html: '<div class="demog">' +
-      '<label>Age</label>' +
+      L('<label>Age</label>', '<label>年龄段</label>') +
       radios('age', [['18-24', '18–24'], ['25-34', '25–34'], ['35-44', '35–44'], ['45-54', '45–54'],
-        ['55+', '55 or over'], ['na', 'Prefer not to say']]) +
-      '<label>Gender</label>' +
-      radios('gender', [['woman', 'Woman'], ['man', 'Man'], ['other', 'Other'], ['na', 'Prefer not to say']]) +
-      '<label for="region">Region of the world where you live</label>' +
-      '<select name="region" id="region"><option value="">(choose one, or leave blank)</option>' +
-      REGIONS.map(([v, t]) => '<option value="' + v + '">' + t + '</option>').join('') + '</select>' +
-      '<label>Training in art or design</label>' +
-      radios('art', [['none', 'None'], ['amateur', 'Amateur (courses or hobby)'],
-        ['professional', 'Professional (degree or work)'], ['na', 'Prefer not to say']]) +
-      '<label>Have you taken part in this study before, on this or another device?</label>' +
-      radios('prior', [['no', 'No'], ['yes', 'Yes'], ['unsure', 'Not sure']]) +
+        ['55+', L('55 or over', '55 岁以上')], ['na', L('Prefer not to say', '不愿透露')]]) +
+      L('<label>Gender</label>', '<label>性别</label>') +
+      radios('gender', L([['woman', 'Woman'], ['man', 'Man'], ['other', 'Other'], ['na', 'Prefer not to say']],
+        [['woman', '女'], ['man', '男'], ['other', '其他'], ['na', '不愿透露']])) +
+      L('<label for="region">Region of the world where you live</label>', '<label for="region">所在的世界地区</label>') +
+      '<select name="region" id="region"><option value="">' + L('(choose one, or leave blank)', '（选一项，或留空）') +
+      '</option>' +
+      REGIONS.map(([v, t]) => '<option value="' + v + '">' + regionLabel(v, t) + '</option>').join('') + '</select>' +
+      L('<label>Training in art or design</label>', '<label>艺术或设计训练</label>') +
+      radios('art', L([['none', 'None'], ['amateur', 'Amateur (courses or hobby)'],
+        ['professional', 'Professional (degree or work)'], ['na', 'Prefer not to say']],
+        [['none', '无'], ['amateur', '业余（课程或爱好）'], ['professional', '专业（学位或从业）'], ['na', '不愿透露']])) +
+      L('<label>Have you taken part in this study before, on this or another device?</label>',
+        '<label>是否曾参加过本研究（在这台或其他设备上）？</label>') +
+      radios('prior', L([['no', 'No'], ['yes', 'Yes'], ['unsure', 'Not sure']],
+        [['no', '否'], ['yes', '是'], ['unsure', '不确定']])) +
       feedbackField + '</div>',
-    button_label: 'Continue',
+    button_label: L('Continue', '继续'),
     data: { task: 'demographics' },
   });
 
@@ -491,7 +623,8 @@
           async: true,
           func: (done) => {
             saveTries += 1;
-            jsPsych.getDisplayElement().innerHTML = '<p>Saving your responses. Please do not close this page.</p>';
+            jsPsych.getDisplayElement().innerHTML = L('<p>Saving your responses. Please do not close this page.</p>',
+              '<p>正在保存您的回答，请不要关闭本页面。</p>');
             const csv = jsPsych.data.get().csv();
             jsPsychPipe.saveData(EXP_ID, filename(), csv).then((r) => {
               const obj = !!r && typeof r === 'object' && !(r instanceof Error);
@@ -509,14 +642,18 @@
           timeline: [{
             type: jsPsychHtmlButtonResponse,
             stimulus: () => (!saveFatal
-              ? '<div class="instr"><p>Your responses could not be saved. This is usually a brief connection ' +
-                'problem.</p><p>Please check your internet connection and click <b>Try again</b>.</p></div>'
+              ? L('<div class="instr"><p>Your responses could not be saved. This is usually a brief connection ' +
+                'problem.</p><p>Please check your internet connection and click <b>Try again</b>.</p></div>',
+                '<div class="instr"><p>您的回答未能保存，这通常是短暂的网络问题。</p><p>请检查网络连接，然后点“重试”。</p></div>')
               : (CLOSED_AT_SAVE.includes(saveCode)
-                ? '<div class="instr"><p>We are sorry: the study has just closed, so your responses could not be ' +
-                  'saved.</p><p>Thank you very much for your time.</p></div>'
-                : '<div class="instr"><p>We are sorry: the study could not accept your responses, so they have not ' +
-                  'been saved.</p><p>Thank you very much for your time.</p></div>')),
-            choices: () => (saveFatal ? ['Finish'] : (saveTries >= 3 ? ['Try again', 'Finish without saving'] : ['Try again'])),
+                ? L('<div class="instr"><p>We are sorry: the study has just closed, so your responses could not be ' +
+                  'saved.</p><p>Thank you very much for your time.</p></div>',
+                  '<div class="instr"><p>很抱歉：本研究刚刚关闭，您的回答未能保存。</p><p>非常感谢您抽出时间。</p></div>')
+                : L('<div class="instr"><p>We are sorry: the study could not accept your responses, so they have not ' +
+                  'been saved.</p><p>Thank you very much for your time.</p></div>',
+                  '<div class="instr"><p>很抱歉：本研究未能接收您的回答，回答没有保存。</p><p>非常感谢您抽出时间。</p></div>'))),
+            choices: () => (saveFatal ? [L('Finish', '结束')] : (saveTries >= 3
+              ? L(['Try again', 'Finish without saving'], ['重试', '不保存，直接结束']) : [L('Try again', '重试')])),
             data: { task: 'save_retry' },
             on_finish: (d) => { if (saveFatal || d.response === 1) saveGiveUp = true; },
           }],
@@ -527,8 +664,16 @@
     });
   }
 
-  const debrief =
-    '<h3>What this study was about</h3>' +
+  // 中文版结束页：附件 03 第七节的中文结束页（繁转简），其中「各子研究在此寫明其具體問題與刺激來源」一处按英文版 S2 的说明译出
+  const debrief = ZH
+    ? '<h3>这项研究想了解什么</h3>' +
+      '<p>感谢您的参与。这项研究想了解的是：同一张图片，只呈现其中不同的部分时，人们觉得好看的程度会改变多少。我们关心的' +
+      '不是哪一张更好看，而是同一个对象的不同呈现之间，评分差异有多大。图片由描述自然河流形状的数学曲线生成，取景按固定' +
+      '规则放置。所以很多张看起来很像：它们是同一条曲线的不同取景。最后我们请您评价那些较长的形状有多像自然的河流，是为了' +
+      '核对这些曲线确实如设计的那样在这方面有所不同。</p>' +
+      '<p>研究中没有任何误导，除开头说明过的注意检查外没有隐藏的测量。如有任何疑问，或希望了解研究结果，欢迎联系：何彩虹　' +
+      cfg.contact_email + '</p>'
+    : '<h3>What this study was about</h3>' +
     '<p>Thank you for taking part. We are studying whether some shapes are judged more <b>consistently</b> ' +
     'than others — that is, whether they look about equally beautiful whichever part of them you see. The ' +
     'images were generated by computer from mathematical curves of the kind used to describe the shapes of ' +
@@ -543,38 +688,48 @@
   // 与任何身份信息无关），在新标签页打开 withdraw.html，由参与者确认后经 DataPipe 记录；B4 的 deid 据此剔除该会话。
   const withdrawURL = () => {
     const u = new URL('withdraw.html', window.location.href);
-    u.search = '?c=' + encodeURIComponent(sessionCode) + (LOCAL ? '&local=1' : '');
+    u.search = '?c=' + encodeURIComponent(sessionCode) + (ZH ? '&lang=zh' : '') + (LOCAL ? '&local=1' : '');
     return u.toString();
   };
-  const withdrawHTML = () =>
-    '<h3>Your data and your right to withdraw</h3>' +
+  const withdrawHTML = () => (ZH
+    ? '<h3>您的数据与撤回的权利</h3>' +
+      '<p>您的回答在保存时不带任何可以认出您的信息。若您希望撤回您的数据，请在 14 日内点击下方链接；若日后链接打不开，' +
+      '请写信至 ' + cfg.contact_email + ' 并注明本页显示的撤回码 <span class="wcode">' + sessionCode + '</span>' +
+      '（程序随机生成的 10 位码，与身份无关；请记下）。14 日之后，数据已去标识化并可能已并入分析，我们将无法定位到您的' +
+      '单条记录。</p><p><a href="' + withdrawURL() + '" target="_blank" rel="noopener">撤回我的数据</a>（在新标签页打开）</p>'
+    : '<h3>Your data and your right to withdraw</h3>' +
     '<p>Your responses are stored without anything that could identify you. If you would like to withdraw your ' +
     'data, please use this link within 14 days: <a href="' + withdrawURL() + '" target="_blank" ' +
     'rel="noopener">Withdraw my data</a> (it opens in a new tab). If the link does not work later, write to ' +
     cfg.contact_email + ', quoting your withdrawal code <span class="wcode">' + sessionCode + '</span> (please note ' +
     'it down). After 14 days the data are de-identified and may already be part of the analysis, so we will not be ' +
-    'able to locate your individual record.</p>';
-  const ethicsNote = '<p class="small">Researcher: Caihong He (' + cfg.contact_email + '). This study was reviewed ' +
+    'able to locate your individual record.</p>');
+  const ethicsNote = L('<p class="small">Researcher: Caihong He (' + cfg.contact_email + '). This study was reviewed ' +
     'and approved by the Research Ethics Committee of the Faculty of Humanities and Arts, Macau University of ' +
-    'Science and Technology (approval number ' + cfg.ethics_ref + ').</p>';
+    'Science and Technology (approval number ' + cfg.ethics_ref + ').</p>',
+    '<p class="small">研究者：何彩虹（' + cfg.contact_email + '）。本研究经澳门科技大学人文艺术学院研究伦理委员会审查，' +
+    '批准编号 ' + cfg.ethics_ref + '。</p>');
 
   timeline.push({
     type: jsPsychHtmlButtonResponse,
     stimulus: () => {
       if (LOCAL) {
-        return '<div class="instr">' + debrief + withdrawHTML() + ethicsNote + '<p><b>Test run.</b> List: ' +
-          (LIST ? LIST.list_id : '') + '. Data are kept in this page only.</p></div>';
+        return '<div class="instr">' + debrief + withdrawHTML() + ethicsNote + L('<p><b>Test run.</b> List: ' +
+          (LIST ? LIST.list_id : '') + '. Data are kept in this page only.</p></div>',
+          '<p><b>测试运行。</b>清单：' + (LIST ? LIST.list_id : '') + '。数据只保存在本页面中。</p></div>');
       }
       if (!saveOK) {  // 未存上（含没填 DataPipe 编号的自测）
-        return '<div class="instr">' + debrief + '<p class="end-thanks">Your responses were not saved, so there is ' +
-          'nothing to withdraw. Thank you very much for your time. You can close this page now.</p>' + ethicsNote +
+        return '<div class="instr">' + debrief + L('<p class="end-thanks">Your responses were not saved, so there is ' +
+          'nothing to withdraw. Thank you very much for your time. You can close this page now.</p>',
+          '<p class="end-thanks">您的回答未保存，故无须撤回。非常感谢您抽出时间。现在可以关闭本页面。</p>') + ethicsNote +
           '</div>';
       }
-      return '<div class="instr">' + debrief + withdrawHTML() + ethicsNote + '<p class="end-thanks">Your responses ' +
-        'have been saved. Thank you very much for your help. You can close this page now.</p></div>';
+      return '<div class="instr">' + debrief + withdrawHTML() + ethicsNote + L('<p class="end-thanks">Your responses ' +
+        'have been saved. Thank you very much for your help. You can close this page now.</p></div>',
+        '<p class="end-thanks">您的回答已保存。非常感谢您的帮助。现在可以关闭本页面。</p></div>');
     },
     // 正式运行时结束页没有按钮（参与者读完即可关闭页面）；本地测试时提供数据下载
-    choices: () => (LOCAL ? ['Download data (CSV)'] : []),
+    choices: () => (LOCAL ? [L('Download data (CSV)', '下载数据（CSV）')] : []),
     data: { task: 'end' },
     on_load: () => { if (!LOCAL && !TEST && saveOK) markDone(); },
     on_finish: () => { if (LOCAL && !SIM) jsPsych.data.get().localSave('csv', filename()); },
