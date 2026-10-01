@@ -214,20 +214,29 @@
     if (q && cont) cont.parentNode.insertBefore(q, cont);
     if (cv) {
       shownPx = cv.width;
-      // 高分辨率屏幕（devicePixelRatio > 1）上按设备像素重画，避免插件画布先缩小再放大造成的模糊
+      // 高分辨率屏幕（devicePixelRatio > 1）上按设备像素重画，避免插件画布先缩小再放大造成的模糊。
+      // 10-01 修正：等插件把画布定好尺寸（cv.height > 0，即插件自己的图已画上）之后再重画。原先在 on_load 时就读
+      // cv.height：若此刻插件的图还没解码完，高度是 0，重画时把画布的 CSS 高度设成了 0，图片看不见（Retina 屏上实测出现）
       const dpr = Math.min(window.devicePixelRatio || 1, 3);
       if (dpr > 1 && src) {
-        const w = cv.width, h = cv.height;
-        const im = new Image();
-        im.onload = () => {
-          if (!cv.isConnected) return;
-          cv.style.width = w + 'px'; cv.style.height = h + 'px';
-          cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr);
-          const ctx = cv.getContext('2d');
-          ctx.imageSmoothingQuality = 'high';
-          ctx.drawImage(im, 0, 0, cv.width, cv.height);
+        let tries = 0;
+        const redraw = () => {
+          if (!cv.isConnected || cv.dataset.hidpi) return;
+          const w = cv.width, h = cv.height;
+          if (!(w > 0 && h > 0)) { if (++tries <= 400) setTimeout(redraw, 25); return; }   // 最多等约 10 秒
+          const im = new Image();
+          im.onload = () => {
+            if (!cv.isConnected || cv.dataset.hidpi || cv.width !== w || cv.height !== h) return;
+            cv.dataset.hidpi = '1';
+            cv.style.width = w + 'px'; cv.style.height = h + 'px';
+            cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr);
+            const ctx = cv.getContext('2d');
+            ctx.imageSmoothingQuality = 'high';
+            ctx.drawImage(im, 0, 0, cv.width, cv.height);
+          };
+          im.src = src;
         };
-        im.src = src;
+        redraw();
       }
     }
     if (!s) return;
