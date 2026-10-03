@@ -53,7 +53,10 @@
   // 界面版本（10-03）：注意检查——同一句提示另以大号黄底框叠在变暗的图片中央、目标端旁加箭头、滑块上方那句加粗放大；
   // 自然度块——整块换浅蓝底、问题移到图片上方加大加框、两端锚点加粗、说明页关键句加大加框且「继续」3 秒后才可点；
   // 指导语里讲注意检查的那句加黄底。只改呈现方式，参与者所见文字一字未改；数据每行带 ui_rev，以区分改动前后的会话
-  const UI_REV = '2026-10-03';
+  // 10-03 晚，同日的文字修订（用户已向伦理委员会确认：指导语与问项的这类修改无须报备）：自然度问项与说明页写明「想象从高空
+  // 俯瞰、只看河道弯曲的形状」；注意检查加「这一张不用评分」；指导语第二页与浮层说明注意检查以黄色提示框出现；中文「滑杆／
+  // 滑轨／标记」统一为「在滑杆上点一下……圆点」；第四张练习改为注意检查的示范。同意书一字未改。版本记为 2026-10-03b
+  const UI_REV = '2026-10-03b';
   const LANG = P.get('lang') === 'zh' ? 'zh' : 'en';
   const ZH = LANG === 'zh';
   const L = (en, zh) => (ZH ? zh : en);
@@ -173,19 +176,22 @@
   const INSTR_RATE = L('<h3>Instructions</h3><p>For each image, please rate <b>how beautiful you find the image as a whole</b>. Click ' +
     'on the slider to place the marker (from <i>Not at all beautiful</i> to <i>Extremely beautiful</i>), adjust it ' +
     'if you wish, then click <b>Next</b>. There are no right or wrong answers; we are interested in your own ' +
-    'impression. Many images will look similar. Please rate each one on its own.</p><p class="check-note">Now and then you will be ' +
-    'asked to move the slider all the way to one end. This checks that the instructions are being read.</p>' +
+    'impression. Many images will look similar. Please rate each one on its own.</p><p class="check-note">On a few images, a yellow ' +
+    'message will ask you to move the slider all the way to the left or right end instead of rating the image. This ' +
+    'checks that you are reading what is on the screen.</p>' +
     '<p>You may close the page at any time without giving a reason.</p>',
-    '<h3>说明</h3><p>请对每一张图片，评出<b>您觉得这张图片整体有多好看</b>。点击滑轨放置标记（左端为“完全不好看”，' +
-    '右端为“非常好看”），可再调整，然后点“下一张”。没有对错，我们关心的是您自己的感受。很多张看起来会很像，' +
-    '请把每一张单独来看。</p><p class="check-note">其间会有几次请您把滑杆拖到最左端或最右端，用来确认说明被读到。</p>' +
+    '<h3>说明</h3><p>请对每一张图片，评出<b>您觉得这张图片整体有多好看</b>。在滑杆上点一下放置圆点（左端为“完全不好看”，' +
+    '右端为“非常好看”），可再拖动调整，然后点“下一张”。没有对错，我们关心的是您自己的感受。很多张看起来会很像，' +
+    '请把每一张单独来看。</p><p class="check-note">个别图片上会出现黄色提示框，请按提示把滑杆拖到最左端或最右端（那一张' +
+    '不用评分），以确认您在留意屏幕上的提示。</p>' +
     '<p>您可以随时关闭页面退出，无须说明理由。</p>');
-  const INSTR_NAT = L('<h3>Instructions</h3><p>For each image, please rate <b>how much it looks like a natural ' +
-    'river</b>. Click on the slider to place the marker (from <i>Not at all</i> to <i>Completely</i>), adjust it if ' +
-    'you wish, then click <b>Next</b>. There are no right or wrong answers.</p>' +
-    '<p>You may close the page at any time without giving a reason.</p>',
-    '<h3>说明</h3><p>请对每张打分：<b>它有多像一条自然的河流</b>。点击滑轨放置标记（左端为“完全不像”，右端为“完全像”），' +
-    '可再调整，然后点“下一张”。没有对错。</p><p>您可以随时关闭页面退出，无须说明理由。</p>');
+  const INSTR_NAT = L('<h3>Instructions</h3><p>Imagine each image as a river seen from above and judge only the shape ' +
+    'of its bends: please rate <b>how much it looks like a natural river</b>. Click on the slider to place the marker ' +
+    '(from <i>Not at all</i> to <i>Completely</i>), adjust it if you wish, then click <b>Next</b>. There are no right ' +
+    'or wrong answers.</p><p>You may close the page at any time without giving a reason.</p>',
+    '<h3>说明</h3><p>请把每张图想象成从高空俯瞰的一条河，只看河道弯曲的形状，评出<b>它有多像一条自然的河流</b>。' +
+    '在滑杆上点一下放置圆点（左端为“完全不像”，右端为“完全像”），可再拖动调整，然后点“下一张”。没有对错。</p>' +
+    '<p>您可以随时关闭页面退出，无须说明理由。</p>');
   let instrViews = 0;
   function showInstrButton(html) {
     let btn = document.getElementById('instr-btn');
@@ -286,21 +292,22 @@
   }
 
   function sliderTrial(task, getId, promptFn, labels, index, getTarget) {
+    const look = getTarget ? 'check' : task;   // 呈现方式：有目标端的（正式检查与练习示范）一律按注意检查显示
     return {
       type: jsPsychImageSliderResponse,
       stimulus: () => img(getId()),
-      stimulus_width: () => sizeFor(task),
-      slider_width: () => sizeFor(task),
+      stimulus_width: () => sizeFor(look),
+      slider_width: () => sizeFor(look),
       labels: labels,
       min: 0, max: 100, step: 1, slider_start: 50,
       require_movement: true,
       button_label: L('Next', '下一张'),
       render_on_canvas: true,
-      prompt: () => '<div id="q-prompt" class="' + (task === 'check' ? 'check-prompt' : 'q-prompt') + '">' + promptFn() + '</div>',
+      prompt: () => '<div id="q-prompt" class="' + (look === 'check' ? 'check-prompt' : 'q-prompt') + '">' + promptFn() + '</div>',
       data: { task: task, position: index },
       on_start: () => { shownPx = null; instrViews = 0; },
       on_load: () => {
-        prepareSlider(img(getId()), task, getTarget ? getTarget() : null);
+        prepareSlider(img(getId()), look, getTarget ? getTarget() : null);
         showInstrButton(task === 'natural' ? INSTR_NAT : INSTR_RATE);
       },
       on_finish: (d) => {
@@ -388,8 +395,10 @@
     (N_BREAKS === 2 ? '两' : N_BREAKS) + '次可选的休息，您可以选择休息或直接继续。您可以随时关闭页面退出，' +
     '无须说明理由。</p></div>',
     '<div class="instr"><h3>如何作答</h3><p>每张图片下方有一条滑杆，左端为“完全不好看”，右端为“非常好看”。' +
-    '滑杆稍候才可操作：点击滑轨放置标记，可再调整，然后点“下一张”。</p><p class="check-note">其间会有几次请您把滑杆拖到最左端或最右端，' +
-    '用来确认说明被读到。</p><p>评分页右下角的“说明”按钮可随时重新打开这些指导语。</p><p>先做四张练习。</p></div>',
+    '图片出现约 1 秒后滑杆才可操作：在滑杆上点一下，会出现一个圆点，可再拖动调整，然后点“下一张”。</p>' +
+    '<p class="check-note">个别图片上会出现黄色提示框，请按提示把滑杆拖到最左端或最右端（那一张不用评分），' +
+    '以确认您在留意屏幕上的提示。</p><p>评分页右下角的“说明”按钮可随时重新打开这些指导语。</p>' +
+    '<p>先做四张练习，最后一张是注意检查的示范。</p></div>',
   ] : [
     '<div class="instr"><h3>Instructions</h3><p>In this study you will see a series of images. Each image shows ' +
     'part of a winding shape.</p><p>For each image, please rate <b>how beautiful you find the image as a whole</b>. There are no ' +
@@ -398,11 +407,12 @@
     ' optional breaks along the way; you can take a break or simply continue. You may close the page at any time ' +
     'without giving a reason.</p></div>',
     '<div class="instr"><h3>How to respond</h3><p>Below each image is a slider from <i>Not at all beautiful</i> ' +
-    'to <i>Extremely beautiful</i>. The slider becomes active after a moment. Click on the slider to place the ' +
-    'marker, adjust it if you wish, then click <b>Next</b>.</p><p class="check-note">Now and then you will be asked to move the ' +
-    'slider all the way to one end. This checks that the instructions are being read.</p><p>You can see these ' +
+    'to <i>Extremely beautiful</i>. The slider becomes active about a second after each image appears. Click on the ' +
+    'slider to place the marker, adjust it if you wish, then click <b>Next</b>.</p><p class="check-note">On a few ' +
+    'images, a yellow message will ask you to move the slider all the way to the left or right end instead of rating ' +
+    'the image. This checks that you are reading what is on the screen.</p><p>You can see these ' +
     'instructions again at any time with the <b>Instructions</b> button at the bottom right of the screen.</p>' +
-    '<p>We start with four practice images.</p></div>',
+    '<p>We start with four practice images; the last one shows what an attention check looks like.</p></div>',
   ];
 
   /* ------------------------------------------------ 时间线 */
@@ -539,22 +549,30 @@
 
   const ratePrompt = () => L('How beautiful is this image?', '这张图片有多好看？');
   // 注意检查的文字（获批原文，见附件 03 第四节）拆成几段：滑块上方那句与叠在图片中央的框共用同一组文字
+  // 10-03b：加「这一张不用评分」
   const checkParts = (target) => (ZH
-    ? { head: '注意检查：', pre: '这一张请把滑杆拖到', dir: target === 0 ? '最左端' : '最右端', post: '。' }
-    : { head: 'Attention check:', pre: ' for this image, please move the slider all the way to the ',
+    ? { head: '注意检查：', note: '这一张不用评分，', pre: '请把滑杆拖到', dir: target === 0 ? '最左端' : '最右端', post: '。' }
+    : { head: 'Attention check:', note: ' no need to rate this image —', pre: ' please move the slider all the way to the ',
       dir: target === 0 ? 'left' : 'right', post: ' end.' });
   const checkPromptHTML = (target) => {
     const c = checkParts(target);
-    return '<b>' + c.head + '</b>' + c.pre + '<b>' + c.dir + '</b>' + c.post;
+    return '<b>' + c.head + '</b>' + c.note + c.pre + '<b>' + c.dir + '</b>' + c.post;
   };
   function checkBannerHTML(target) {
     const c = checkParts(target);
+    const note = c.note.trim();
     return '<div class="cb-head"><span class="cb-icon" aria-hidden="true">!</span>' + c.head + '</div>' +
-      '<div class="cb-body">' + c.pre.replace(/^\s+/, '') +
+      '<div class="cb-body"><span class="cb-note">' + note.charAt(0).toUpperCase() + note.slice(1) + '</span>' +
+      c.pre.replace(/^\s+/, '') +
       '<span class="cb-keep"><span class="cb-dir">' + c.dir + '</span>' + c.post + '</span></div>';   // 「最右端。」不拆行
   }
+  // 10-03b：第四张练习改为注意检查的示范（目标右端；仍记为 practice，check_target = 100；不进分析）
   template.practice.forEach((_, i) => {
-    timeline.push(sliderTrial('practice', () => LIST.practice[i], ratePrompt, RATE_LABELS, i));
+    if (i === 3) {
+      timeline.push(sliderTrial('practice', () => LIST.practice[i], () => checkPromptHTML(100), RATE_LABELS, i, () => 100));
+    } else {
+      timeline.push(sliderTrial('practice', () => LIST.practice[i], ratePrompt, RATE_LABELS, i));
+    }
   });
   timeline.push({
     type: jsPsychHtmlButtonResponse,
@@ -587,10 +605,12 @@
   timeline.push({
     type: jsPsychHtmlButtonResponse,
     stimulus: L('<div class="instr"><h3>Almost done</h3><p>You will now see ' + template.natural.length +
-      ' images, each showing a longer stretch of a winding shape.</p><p class="nat-key">For each one, please rate <b>how much it ' +
-      'looks like a natural river</b>.</p></div>',
+      ' images, each showing a longer stretch of a winding shape. Imagine each image as a river seen from above. ' +
+      'All images are drawn in the same simple style, so please judge only the shape of its bends.</p>' +
+      '<p class="nat-key">For each one, please rate <b>how much it looks like a natural river</b>.</p></div>',
       '<div class="instr"><h3>快结束了</h3><p>接下来是 ' + template.natural.length + ' 张图，每张显示蜿蜒形状更长的一段。' +
-      '</p><p class="nat-key">请对每张打分：<b>它有多像一条自然的河流</b>。</p></div>'),
+      '请把每张图想象成从高空俯瞰的一条河。所有图都画成同样简单的样式，请只看河道弯曲的形状。</p>' +
+      '<p class="nat-key">请对每张打分：<b>它有多像一条自然的河流</b>。</p></div>'),
     choices: L(['Continue'], ['继续']), data: { task: 'natural_intro' },
     // 10-03：「继续」3 秒后才可点，免得把这一页当作又一个过渡页直接点过去（文字不变）
     on_load: () => {
@@ -601,7 +621,8 @@
   });
   template.natural.forEach((_, i) => {
     timeline.push(sliderTrial('natural', () => LIST.natural[i],
-      () => L('How much does this look like a natural river?', '这张图有多像一条自然的河流？'), NAT_LABELS, i));
+      () => L('How much does the shape of this channel look like that of a natural river?',
+        '这条河道的形状有多像一条自然的河流？'), NAT_LABELS, i));
   });
 
   const feedbackField = VERSION === 'pilot'
