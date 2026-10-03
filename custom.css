@@ -65,6 +65,7 @@ html:lang(zh) body, html:lang(zh) .jspsych-display-element, html:lang(zh) .withd
 .check-banner .cb-body { font-size: 27px; font-weight: 700; }
 html:lang(zh) .check-banner .cb-body { font-size: 32px; }
 .check-banner .cb-dir { color: #c92a2a; font-size: 1.2em; text-decoration: underline; text-underline-offset: 5px; }
+.check-banner .cb-keep { white-space: nowrap; }
 #q-prompt.check-prompt { display: inline-block; margin: 2px 0 8px 0; padding: 1px 12px; font-size: 18px; font-weight: bold;
                          color: #c92a2a; background: #fff3bf; border-radius: 4px; }
 html:lang(zh) #q-prompt.check-prompt { font-size: 21px; }

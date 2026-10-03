@@ -550,7 +550,8 @@
   function checkBannerHTML(target) {
     const c = checkParts(target);
     return '<div class="cb-head"><span class="cb-icon" aria-hidden="true">!</span>' + c.head + '</div>' +
-      '<div class="cb-body">' + c.pre.replace(/^\s+/, '') + '<span class="cb-dir">' + c.dir + '</span>' + c.post + '</div>';
+      '<div class="cb-body">' + c.pre.replace(/^\s+/, '') +
+      '<span class="cb-keep"><span class="cb-dir">' + c.dir + '</span>' + c.post + '</span></div>';   // 「最右端。」不拆行
   }
   template.practice.forEach((_, i) => {
     timeline.push(sliderTrial('practice', () => LIST.practice[i], ratePrompt, RATE_LABELS, i));
