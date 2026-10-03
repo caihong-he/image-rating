@@ -50,6 +50,10 @@
   const LIST_FILE = VERSION === 'pilot' ? 'lists/pilot.json' : 'lists/main_' + COND + '_m' + cfg.m + '.json';
   const MINUTES = VERSION === 'pilot' ? 16 : (COND === 'band' ? 12 : 10);
   // 语言：L(英文, 中文) 按 lang 取其一；英文版的文字一字未动
+  // 界面版本（10-03）：注意检查——同一句提示另以大号黄底框叠在变暗的图片中央、目标端旁加箭头、滑块上方那句加粗放大；
+  // 自然度块——整块换浅蓝底、问题移到图片上方加大加框、两端锚点加粗、说明页关键句加大加框且「继续」3 秒后才可点；
+  // 指导语里讲注意检查的那句加黄底。只改呈现方式，参与者所见文字一字未改；数据每行带 ui_rev，以区分改动前后的会话
+  const UI_REV = '2026-10-03';
   const LANG = P.get('lang') === 'zh' ? 'zh' : 'en';
   const ZH = LANG === 'zh';
   const L = (en, zh) => (ZH ? zh : en);
@@ -77,6 +81,10 @@
   const IMG_MAX = 600, IMG_MIN = 400, RESERVE = 230;
   const MIN_W = 1000, MIN_H = IMG_MIN + RESERVE;
   const size = () => Math.max(IMG_MIN, Math.min(IMG_MAX, window.innerHeight - RESERVE));
+  // 注意检查与自然度试次的提示更大，占的高度多一些：这两类试次的图相应缩小（不进主分析；普通评分页仍按 size()）
+  const EXTRA_H = { check: 10, natural: 26 };
+  const sizeFor = (task) => (EXTRA_H[task]
+    ? Math.max(IMG_MIN - 40, Math.min(IMG_MAX, window.innerHeight - RESERVE - EXTRA_H[task])) : size());
 
   // 同一浏览器已经完成过：致谢并结束，不分配清单、不存任何数据（研究者自测与本地测试不受此限）
   if (!LOCAL && !TEST && alreadyDone()) {
@@ -141,6 +149,7 @@
     version: VERSION, cond: COND, recruit: 'volunteer', lang: LANG, test: TEST ? 1 : 0, quick: QUICK ? 1 : 0,
     session_code: sessionCode, local: LOCAL ? 1 : 0, simulate: SIM || '', list_file: LIST_FILE,
     lists_param: SUBSET.join(' '), dpr: window.devicePixelRatio || 1, start_time: new Date().toISOString(),
+    ui_rev: UI_REV,
   });
 
   const img = (id) => 'stim/' + id + '.webp';
@@ -164,12 +173,12 @@
   const INSTR_RATE = L('<h3>Instructions</h3><p>For each image, please rate <b>how beautiful you find the image as a whole</b>. Click ' +
     'on the slider to place the marker (from <i>Not at all beautiful</i> to <i>Extremely beautiful</i>), adjust it ' +
     'if you wish, then click <b>Next</b>. There are no right or wrong answers; we are interested in your own ' +
-    'impression. Many images will look similar. Please rate each one on its own.</p><p>Now and then you will be ' +
+    'impression. Many images will look similar. Please rate each one on its own.</p><p class="check-note">Now and then you will be ' +
     'asked to move the slider all the way to one end. This checks that the instructions are being read.</p>' +
     '<p>You may close the page at any time without giving a reason.</p>',
     '<h3>说明</h3><p>请对每一张图片，评出<b>您觉得这张图片整体有多好看</b>。点击滑轨放置标记（左端为“完全不好看”，' +
     '右端为“非常好看”），可再调整，然后点“下一张”。没有对错，我们关心的是您自己的感受。很多张看起来会很像，' +
-    '请把每一张单独来看。</p><p>其间会有几次请您把滑杆拖到最左端或最右端，用来确认说明被读到。</p>' +
+    '请把每一张单独来看。</p><p class="check-note">其间会有几次请您把滑杆拖到最左端或最右端，用来确认说明被读到。</p>' +
     '<p>您可以随时关闭页面退出，无须说明理由。</p>');
   const INSTR_NAT = L('<h3>Instructions</h3><p>For each image, please rate <b>how much it looks like a natural ' +
     'river</b>. Click on the slider to place the marker (from <i>Not at all</i> to <i>Completely</i>), adjust it if ' +
@@ -204,14 +213,41 @@
     if (ov) ov.classList.remove('open');
   }
 
-  /* ------------------------------------------------ 滑块：问题放在滑块上方；手柄首次点击后才出现；1 秒后解锁 */
+  /* ------------------------------------------------ 滑块：问题放在滑块上方；手柄首次点击后才出现；1 秒后解锁。
+     10-03：注意检查试次另把同一句提示以醒目的框叠在图片中央（滑块上方的那句照旧保留）；自然度试次把问题移到图片上方并加框，
+     让「换了一个问题」一眼可见。文字不变，只改位置与样式 */
   let shownPx = null;
-  function prepareSlider(src) {
+  function prepareSlider(src, task, target) {
     const s = document.querySelector('#jspsych-image-slider-response-response');
     const cont = document.querySelector('.jspsych-image-slider-response-container');
     const q = document.querySelector('#q-prompt');
     const cv = document.querySelector('canvas#jspsych-image-slider-response-stimulus');
-    if (q && cont) cont.parentNode.insertBefore(q, cont);
+    if (q && cv && task === 'natural') {
+      q.classList.add('nat-prompt');
+      cv.parentNode.insertBefore(q, cv);
+    } else if (q && cont) {
+      cont.parentNode.insertBefore(q, cont);
+    }
+    if (q && cv && task === 'check') {
+      const box = document.createElement('div');
+      box.className = 'stim-box';
+      cv.parentNode.insertBefore(box, cv);
+      box.appendChild(cv);
+      const ov = document.createElement('div');
+      ov.className = 'check-overlay';
+      ov.innerHTML = '<div class="check-banner" id="check-banner">' + checkBannerHTML(target) + '</div>';
+      box.appendChild(ov);
+      if (cont) {   // 目标端旁的箭头（图形，不含文字）
+        const ar = document.createElement('div');
+        ar.className = 'check-arrow ' + (target === 0 ? 'to-left' : 'to-right');
+        ar.id = 'check-arrow';
+        ar.setAttribute('aria-hidden', 'true');
+        ar.innerHTML = '<svg viewBox="0 0 44 26" width="44" height="26"><path d="M3 13h30M24 4l12 9-12 9" fill="none" ' +
+          'stroke="#d9480f" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+        cont.appendChild(ar);
+        if (s) ar.style.top = Math.round(s.offsetTop + s.offsetHeight / 2 - 13) + 'px';   // 与滑轨同高
+      }
+    }
     if (cv) {
       shownPx = cv.width;
       // 高分辨率屏幕（devicePixelRatio > 1）上按设备像素重画，避免插件画布先缩小再放大造成的模糊。
@@ -253,8 +289,8 @@
     return {
       type: jsPsychImageSliderResponse,
       stimulus: () => img(getId()),
-      stimulus_width: size,
-      slider_width: size,
+      stimulus_width: () => sizeFor(task),
+      slider_width: () => sizeFor(task),
       labels: labels,
       min: 0, max: 100, step: 1, slider_start: 50,
       require_movement: true,
@@ -263,7 +299,10 @@
       prompt: () => '<div id="q-prompt" class="' + (task === 'check' ? 'check-prompt' : 'q-prompt') + '">' + promptFn() + '</div>',
       data: { task: task, position: index },
       on_start: () => { shownPx = null; instrViews = 0; },
-      on_load: () => { prepareSlider(img(getId())); showInstrButton(task === 'natural' ? INSTR_NAT : INSTR_RATE); },
+      on_load: () => {
+        prepareSlider(img(getId()), task, getTarget ? getTarget() : null);
+        showInstrButton(task === 'natural' ? INSTR_NAT : INSTR_RATE);
+      },
       on_finish: (d) => {
         hideInstrButton();
         d.view_id = getId();
@@ -349,7 +388,7 @@
     (N_BREAKS === 2 ? '两' : N_BREAKS) + '次可选的休息，您可以选择休息或直接继续。您可以随时关闭页面退出，' +
     '无须说明理由。</p></div>',
     '<div class="instr"><h3>如何作答</h3><p>每张图片下方有一条滑杆，左端为“完全不好看”，右端为“非常好看”。' +
-    '滑杆稍候才可操作：点击滑轨放置标记，可再调整，然后点“下一张”。</p><p>其间会有几次请您把滑杆拖到最左端或最右端，' +
+    '滑杆稍候才可操作：点击滑轨放置标记，可再调整，然后点“下一张”。</p><p class="check-note">其间会有几次请您把滑杆拖到最左端或最右端，' +
     '用来确认说明被读到。</p><p>评分页右下角的“说明”按钮可随时重新打开这些指导语。</p><p>先做四张练习。</p></div>',
   ] : [
     '<div class="instr"><h3>Instructions</h3><p>In this study you will see a series of images. Each image shows ' +
@@ -360,7 +399,7 @@
     'without giving a reason.</p></div>',
     '<div class="instr"><h3>How to respond</h3><p>Below each image is a slider from <i>Not at all beautiful</i> ' +
     'to <i>Extremely beautiful</i>. The slider becomes active after a moment. Click on the slider to place the ' +
-    'marker, adjust it if you wish, then click <b>Next</b>.</p><p>Now and then you will be asked to move the ' +
+    'marker, adjust it if you wish, then click <b>Next</b>.</p><p class="check-note">Now and then you will be asked to move the ' +
     'slider all the way to one end. This checks that the instructions are being read.</p><p>You can see these ' +
     'instructions again at any time with the <b>Instructions</b> button at the bottom right of the screen.</p>' +
     '<p>We start with four practice images.</p></div>',
@@ -499,6 +538,20 @@
   });
 
   const ratePrompt = () => L('How beautiful is this image?', '这张图片有多好看？');
+  // 注意检查的文字（获批原文，见附件 03 第四节）拆成几段：滑块上方那句与叠在图片中央的框共用同一组文字
+  const checkParts = (target) => (ZH
+    ? { head: '注意检查：', pre: '这一张请把滑杆拖到', dir: target === 0 ? '最左端' : '最右端', post: '。' }
+    : { head: 'Attention check:', pre: ' for this image, please move the slider all the way to the ',
+      dir: target === 0 ? 'left' : 'right', post: ' end.' });
+  const checkPromptHTML = (target) => {
+    const c = checkParts(target);
+    return '<b>' + c.head + '</b>' + c.pre + '<b>' + c.dir + '</b>' + c.post;
+  };
+  function checkBannerHTML(target) {
+    const c = checkParts(target);
+    return '<div class="cb-head"><span class="cb-icon" aria-hidden="true">!</span>' + c.head + '</div>' +
+      '<div class="cb-body">' + c.pre.replace(/^\s+/, '') + '<span class="cb-dir">' + c.dir + '</span>' + c.post + '</div>';
+  }
   template.practice.forEach((_, i) => {
     timeline.push(sliderTrial('practice', () => LIST.practice[i], ratePrompt, RATE_LABELS, i));
   });
@@ -509,14 +562,13 @@
     choices: L(['Start'], ['开始']), data: { task: 'start' },
   });
 
+  const NAT_INTRO_MS = 3000;
   const N = template.trials.length;
   const breakEvery = Math.ceil(N / (N_BREAKS + 1));
   template.trials.forEach((t, i) => {
     if (t.kind === 'check') {
       timeline.push(sliderTrial('check', () => LIST.trials[i].id,
-        () => L('<b>Attention check:</b> for this image, please move the slider all the way to the <b>' +
-          (LIST.trials[i].target === 0 ? 'left' : 'right') + '</b> end.',
-          '<b>注意检查：</b>这一张请把滑杆拖到最<b>' + (LIST.trials[i].target === 0 ? '左' : '右') + '</b>端。'),
+        () => checkPromptHTML(LIST.trials[i].target),
         RATE_LABELS, i, () => LIST.trials[i].target));
     } else {
       timeline.push(sliderTrial(t.kind, () => LIST.trials[i].id, ratePrompt, RATE_LABELS, i));
@@ -534,11 +586,17 @@
   timeline.push({
     type: jsPsychHtmlButtonResponse,
     stimulus: L('<div class="instr"><h3>Almost done</h3><p>You will now see ' + template.natural.length +
-      ' images, each showing a longer stretch of a winding shape.</p><p>For each one, please rate <b>how much it ' +
+      ' images, each showing a longer stretch of a winding shape.</p><p class="nat-key">For each one, please rate <b>how much it ' +
       'looks like a natural river</b>.</p></div>',
       '<div class="instr"><h3>快结束了</h3><p>接下来是 ' + template.natural.length + ' 张图，每张显示蜿蜒形状更长的一段。' +
-      '</p><p>请对每张打分：<b>它有多像一条自然的河流</b>。</p></div>'),
+      '</p><p class="nat-key">请对每张打分：<b>它有多像一条自然的河流</b>。</p></div>'),
     choices: L(['Continue'], ['继续']), data: { task: 'natural_intro' },
+    // 10-03：「继续」3 秒后才可点，免得把这一页当作又一个过渡页直接点过去（文字不变）
+    on_load: () => {
+      const b = document.querySelector('#jspsych-html-button-response-btngroup button');
+      if (b && !SIM) { b.disabled = true; setTimeout(() => { b.disabled = false; }, NAT_INTRO_MS); }
+      document.documentElement.classList.add('nat-block');   // 自然度块整块换浅蓝底，到背景问项页恢复
+    },
   });
   template.natural.forEach((_, i) => {
     timeline.push(sliderTrial('natural', () => LIST.natural[i],
@@ -618,6 +676,7 @@
       feedbackField + '</div>',
     button_label: L('Continue', '继续'),
     data: { task: 'demographics' },
+    on_load: () => { document.documentElement.classList.remove('nat-block'); },
   });
 
   /* ------------------------------------------------ 保存到 DataPipe（连接问题自动重试；三次失败后允许不保存而结束。
