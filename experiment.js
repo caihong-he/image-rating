@@ -56,7 +56,12 @@
   // 10-03 晚，同日的文字修订（用户已向伦理委员会确认：指导语与问项的这类修改无须报备）：自然度问项与说明页写明「想象从高空
   // 俯瞰、只看河道弯曲的形状」；注意检查加「这一张不用评分」；指导语第二页与浮层说明注意检查以黄色提示框出现；中文「滑杆／
   // 滑轨／标记」统一为「在滑杆上点一下……圆点」；第四张练习改为注意检查的示范。同意书一字未改。版本记为 2026-10-03b
-  const UI_REV = '2026-10-03b';
+  // 10-09 文字修订（10-09 报伦理委员会，委员会确认后才上线）：同意书的研究名称与「这项研究要做什么」改为概括的说法，
+  // 不再点明「取景不同、好看的程度差多少」；指导语、两个说明浮层、自然度说明页删去透露设计的句子（「每张显示蜿蜒形状的
+  // 一部分／更长的一段」「以确认您在留意屏幕上的提示」），措辞口语化；结束页标题改为「谢谢您的参与」，具体想了解什么用
+  // 两三句话交代。手机打开时不再先出「窗口太小」页，直接显示「请在电脑上完成」，附本研究网址与「复制网址」按钮。
+  // 评分项、注意检查的提示、背景问项、撤回一节都不变。版本记为 2026-10-09
+  const UI_REV = '2026-10-09';
   const LANG = P.get('lang') === 'zh' ? 'zh' : 'en';
   const ZH = LANG === 'zh';
   const L = (en, zh) => (ZH ? zh : en);
@@ -174,24 +179,23 @@
 
   /* ------------------------------------------------ 评分页上随时可看的指导语（获批研究计划：「可隨時回看指導語」） */
   const INSTR_RATE = L('<h3>Instructions</h3><p>For each image, please rate <b>how beautiful you find the image as a whole</b>. Click ' +
-    'on the slider to place the marker (from <i>Not at all beautiful</i> to <i>Extremely beautiful</i>), adjust it ' +
-    'if you wish, then click <b>Next</b>. There are no right or wrong answers; we are interested in your own ' +
-    'impression. Many images will look similar. Please rate each one on its own.</p><p class="check-note">On a few images, a yellow ' +
-    'message will ask you to move the slider all the way to the left or right end instead of rating the image. This ' +
-    'checks that you are reading what is on the screen.</p>' +
+    'on the slider to place a dot (from <i>Not at all beautiful</i> to <i>Extremely beautiful</i>), adjust it if you ' +
+    'like, then click <b>Next</b>. There are no right or wrong answers; just go with your impression. Some images ' +
+    'look alike. Simply rate each one on its own.</p><p class="check-note">Now and then a yellow box will ask you to ' +
+    'move the slider all the way to the left or right end; that image does not need a rating.</p>' +
     '<p>You may close the page at any time without giving a reason.</p>',
-    '<h3>说明</h3><p>请对每一张图片，评出<b>您觉得这张图片整体有多好看</b>。在滑杆上点一下放置圆点（左端为“完全不好看”，' +
-    '右端为“非常好看”），可再拖动调整，然后点“下一张”。没有对错，我们关心的是您自己的感受。很多张看起来会很像，' +
-    '请把每一张单独来看。</p><p class="check-note">个别图片上会出现黄色提示框，请按提示把滑杆拖到最左端或最右端（那一张' +
-    '不用评分），以确认您在留意屏幕上的提示。</p>' +
-    '<p>您可以随时关闭页面退出，无须说明理由。</p>');
-  const INSTR_NAT = L('<h3>Instructions</h3><p>Imagine each image as a river seen from above and judge only the shape ' +
-    'of its bends: please rate <b>how much it looks like a natural river</b>. Click on the slider to place the marker ' +
-    '(from <i>Not at all</i> to <i>Completely</i>), adjust it if you wish, then click <b>Next</b>. There are no right ' +
-    'or wrong answers.</p><p>You may close the page at any time without giving a reason.</p>',
-    '<h3>说明</h3><p>请把每张图想象成从高空俯瞰的一条河，只看河道弯曲的形状，评出<b>它有多像一条自然的河流</b>。' +
-    '在滑杆上点一下放置圆点（左端为“完全不像”，右端为“完全像”），可再拖动调整，然后点“下一张”。没有对错。</p>' +
-    '<p>您可以随时关闭页面退出，无须说明理由。</p>');
+    '<h3>说明</h3><p>请<b>根据每张图片的整体感觉，评一评它有多好看</b>。' +
+    '在滑杆上点一下放置圆点（左端是“完全不好看”，右端是“非常好看”），可以拖动调整，然后点“下一张”。' +
+    '没有对错，凭直觉就好。有些图片看起来很像，每张单独评就可以。</p>' +
+    '<p class="check-note">偶尔会出现黄色提示框，请照提示把滑杆拖到最左端或最右端，那一张不用评分。</p>' +
+    '<p>您随时可以关闭页面退出，无须说明理由。</p>');
+  const INSTR_NAT = L('<h3>Instructions</h3><p>Imagine each image as a river seen from above, and look only at the shape ' +
+    'of its bends: please rate <b>how much it looks like a natural river</b>. Click on the slider to place a dot ' +
+    '(from <i>Not at all</i> to <i>Completely</i>), adjust it if you like, then click <b>Next</b>. There are no right ' +
+    'or wrong answers; just go with your impression.</p><p>You may close the page at any time without giving a reason.</p>',
+    '<h3>说明</h3><p>请把每张图想象成从高空往下看到的一条河，只看它弯曲的形状，评一评<b>它有多像一条自然形成的河流</b>。' +
+    '在滑杆上点一下放置圆点（左端是“完全不像”，右端是“完全像”），可以拖动调整，然后点“下一张”。没有对错，凭直觉就好。</p>' +
+    '<p>您随时可以关闭页面退出，无须说明理由。</p>');
   let instrViews = 0;
   function showInstrButton(html) {
     let btn = document.getElementById('instr-btn');
@@ -326,17 +330,17 @@
   // 9-30 晚：不列导师姓名（修订申请第一节第 2 条第 (4) 款：避免经联合国渠道来的参与者因导师职务感到压力）。
   // 改这里之前先改 `99 共用/预注册与伦理/论文B_知情同意与研究说明_v4_2026-09-30.md`。
   // 中文版（10-01）：获批附件 07 的中文版逐句繁转简（用语按内地习惯，见文件头）；各段小标题后换行
+  // 10-09：研究名称与「这项研究要做什么」一段按 10-09 的措辞修改请示改写（中英同改），其余各节一字未改
   const N_BREAKS = 2;
   const consentHTML = L(
     '<div class="consent-box">' +
     '<h3>Information and consent</h3>' +
-    '<p><b>Study:</b> Framing and aesthetic evaluation of images<br>' +
+    '<p><b>Study:</b> Aesthetic evaluation of images<br>' +
     '<b>Researcher:</b> Caihong He, PhD candidate, Faculty of Humanities and Arts, Macau University of Science and ' +
     'Technology<br><b>Contact:</b> ' + cfg.contact_email + '<br>' +
     '<b>Ethics approval number:</b> ' + cfg.ethics_ref + '</p>' +
-    '<p><b>What is this study about?</b> We want to know how much people’s liking of a picture changes when the ' +
-    'picture is framed (cropped) differently. You will see a series of images and rate how beautiful you find each ' +
-    'one. There are no right answers — we want your immediate impression.</p>' +
+    '<p><b>What is this study about?</b> We want to learn how people judge whether images are beautiful. You will ' +
+    'see a series of images and rate each one by your first impression. There are no right answers.</p>' +
     '<p><b>How long will it take?</b> About ' + MINUTES + ' minutes, with two optional short breaks. Please use a ' +
     'laptop or desktop computer.</p>' +
     '<p><b>Taking part is voluntary.</b> This study recruits volunteers and offers no payment. Whether you take ' +
@@ -364,12 +368,12 @@
     'or corrected-to-normal vision; I have read and understood the above; I agree to take part.</label></p>',
     '<div class="consent-box">' +
     '<h3>研究说明与知情同意</h3>' +
-    '<p><b>研究名称：</b>图像取景与审美评价的关系<br>' +
+    '<p><b>研究名称：</b>图像审美评价<br>' +
     '<b>研究者：</b>何彩虹，澳门科技大学人文艺术学院博士研究生<br>' +
     '<b>联系方式：</b>' + cfg.contact_email + '<br>' +
     '<b>伦理批准编号：</b>' + cfg.ethics_ref + '</p>' +
-    '<p><b>这项研究要做什么</b><br>我们想了解：同一张图片，取景（画面裁切）不同，人们觉得好看的程度会差多少。' +
-    '您将看到一系列图片，请对每一张给出您觉得好看的程度。没有正确答案，我们要的是您的直觉。</p>' +
+    '<p><b>这项研究要做什么</b><br>我们想了解人们怎样评价图片好不好看。您将看到一系列图片，请凭第一感觉为每一张打分。' +
+    '没有正确答案。</p>' +
     '<p><b>需要多久</b><br>约 ' + MINUTES + ' 分钟，中间有两次可选的休息。请使用电脑（台式或笔记本）作答。</p>' +
     '<p><b>参与是自愿的</b><br>本研究招募志愿者，不设报酬。参与与否完全由您决定；不参加或中途退出，都不会产生任何后果。' +
     '我们不知道、也无从知道谁参加了。</p>' +
@@ -386,34 +390,76 @@
     '<p class="consent-check"><label><input type="checkbox" id="consent-cb"> 我已年满 18 岁，视力正常或矫正后正常；' +
     '我已阅读并理解上述说明；我自愿参加这项研究。</label></p>');
 
-  // 中文版指导语：获批附件 03 的中文第一、二页（繁转简）；第一页按附件 03 的说明补上描述刺激的一句（同英文版
-  // 「Each image shows part of a winding shape.」）
+  // 指导语（10-09 改写，见 UI_REV 处的说明）：删去描述刺激的一句（「每张图片显示一个蜿蜒形状的一部分」）和注意检查的
+  // 用意；保留「整体」与「每张单独评」两点（测量本身的要求：评整张图，不和上一张比）
   const instrPages = ZH ? [
-    '<div class="instr"><h3>说明</h3><p>您会看到一系列图片，每次一张。每张图片显示一个蜿蜒形状的一部分。</p>' +
-    '<p>请对每一张图片，评出<b>您觉得这张图片整体有多好看</b>。没有对错，我们关心的是您自己的感受。</p>' +
-    '<p>很多张看起来会很像，请把每一张单独来看。</p><p>任务约需 ' + MINUTES + ' 分钟，中途有' +
-    (N_BREAKS === 2 ? '两' : N_BREAKS) + '次可选的休息，您可以选择休息或直接继续。您可以随时关闭页面退出，' +
-    '无须说明理由。</p></div>',
-    '<div class="instr"><h3>如何作答</h3><p>每张图片下方有一条滑杆，左端为“完全不好看”，右端为“非常好看”。' +
-    '图片出现约 1 秒后滑杆才可操作：在滑杆上点一下，会出现一个圆点，可再拖动调整，然后点“下一张”。</p>' +
-    '<p class="check-note">个别图片上会出现黄色提示框，请按提示把滑杆拖到最左端或最右端（那一张不用评分），' +
-    '以确认您在留意屏幕上的提示。</p><p>评分页右下角的“说明”按钮可随时重新打开这些指导语。</p>' +
-    '<p>先做四张练习，最后一张是注意检查的示范。</p></div>',
+    '<div class="instr"><h3>说明</h3><p>接下来图片会一张一张出现。请<b>根据每张图片的整体感觉，评一评它有多好看</b>。' +
+    '没有对错，凭直觉就好。</p><p>有些图片看起来很像，每张单独评就可以。</p><p>全程约 ' + MINUTES + ' 分钟，中间有' +
+    (N_BREAKS === 2 ? '两' : N_BREAKS) + '次可以选择休息。您随时可以关闭页面退出，无须说明理由。</p></div>',
+    '<div class="instr"><h3>如何作答</h3><p>图片下方有一条滑杆，左端是“完全不好看”，右端是“非常好看”。' +
+    '图片出现约 1 秒后，在滑杆上点一下会出现一个圆点，可以拖动调整，然后点“下一张”。</p>' +
+    '<p class="check-note">偶尔会出现黄色提示框，请照提示把滑杆拖到最左端或最右端，那一张不用评分。</p>' +
+    '<p>右下角的“说明”按钮可以随时再看这些说明。</p><p>先练习四张，最后一张是黄色提示框的示范。</p></div>',
   ] : [
-    '<div class="instr"><h3>Instructions</h3><p>In this study you will see a series of images. Each image shows ' +
-    'part of a winding shape.</p><p>For each image, please rate <b>how beautiful you find the image as a whole</b>. There are no ' +
-    'right or wrong answers; we are interested in your own impression.</p><p>Many images will look similar. ' +
-    'Please rate each one on its own.</p><p>The task takes about ' + MINUTES + ' minutes. There are ' + N_BREAKS +
-    ' optional breaks along the way; you can take a break or simply continue. You may close the page at any time ' +
+    '<div class="instr"><h3>Instructions</h3><p>Images will appear one at a time. For each one, please rate ' +
+    '<b>how beautiful you find the image as a whole</b>. There are no right or wrong answers; just go with your ' +
+    'impression.</p><p>Some images look alike. Simply rate each one on its own.</p><p>The task takes about ' + MINUTES +
+    ' minutes, with ' + (N_BREAKS === 2 ? 'two' : N_BREAKS) + ' optional breaks. You may close the page at any time ' +
     'without giving a reason.</p></div>',
-    '<div class="instr"><h3>How to respond</h3><p>Below each image is a slider from <i>Not at all beautiful</i> ' +
-    'to <i>Extremely beautiful</i>. The slider becomes active about a second after each image appears. Click on the ' +
-    'slider to place the marker, adjust it if you wish, then click <b>Next</b>.</p><p class="check-note">On a few ' +
-    'images, a yellow message will ask you to move the slider all the way to the left or right end instead of rating ' +
-    'the image. This checks that you are reading what is on the screen.</p><p>You can see these ' +
-    'instructions again at any time with the <b>Instructions</b> button at the bottom right of the screen.</p>' +
-    '<p>We start with four practice images; the last one shows what an attention check looks like.</p></div>',
+    '<div class="instr"><h3>How to respond</h3><p>Below each image is a slider from <i>Not at all beautiful</i> on ' +
+    'the left to <i>Extremely beautiful</i> on the right. About a second after the image appears, click on the slider ' +
+    'to place a dot, adjust it if you like, then click <b>Next</b>.</p><p class="check-note">Now and then a yellow box ' +
+    'will ask you to move the slider all the way to the left or right end; that image does not need a rating.</p>' +
+    '<p>The <b>Instructions</b> button at the bottom right shows these instructions again at any time.</p>' +
+    '<p>We start with four practice images; the last one shows the yellow box.</p></div>',
   ];
+
+  /* ------------------------------------------------ 手机提示页（10-09） */
+  // 手机打开时：说明需用电脑，给出本研究网址（可复制后发到电脑上打开）。不先出「窗口太小」页（见 browser-check 处）。
+  // 网址只带参与者链接本身的参数（v、cond、lists），不带 test、quick、list 等研究者自测用的参数；中文版用短网址 …/zh/
+  const IS_MOBILE = /Mobi/i.test(window.navigator.userAgent);   // 与 browser-check 插件判断 mobile 的规则相同
+  const shareURL = () => {
+    const q = ['v', 'cond', 'lists'].filter((k) => P.get(k) !== null)
+      .map((k) => k + '=' + encodeURIComponent(P.get(k)).replace(/%2C/gi, ','));
+    return window.location.origin + window.location.pathname.replace(/[^/]*$/, '') + (ZH ? 'zh/' : '') +
+      (q.length ? '?' + q.join('&') : '');
+  };
+  const escAttr = (t) => String(t).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const phonePageHTML = () => {
+    const pb = document.getElementById('jspsych-progressbar-container');
+    if (pb) pb.style.display = 'none';                            // 进度条在这一页没有意义
+    return phonePageBody();
+  };
+  const phonePageBody = () => L(
+    '<div class="instr phone-page"><h3>Please use a computer</h3><p>This study needs a laptop or desktop computer: ' +
+    'the images must be shown at a fixed size, and the slider needs precise clicking.</p>' +
+    '<p>Please open this address in a browser on your computer:</p>',
+    '<div class="instr phone-page"><h3>请在电脑上完成</h3><p>本研究需要用电脑（台式或笔记本）完成：' +
+    '图片要按固定的大小显示，滑杆也需要精确点选。</p><p>请在电脑的浏览器里打开这个网址：</p>') +
+    '<input type="text" id="share-url" class="share-url" readonly value="' + escAttr(shareURL()) + '" aria-label="' +
+    L('Study address', '本研究网址') + '"><p><button type="button" id="copy-url" class="jspsych-btn">' +
+    L('Copy address', '复制网址') + '</button></p>' +
+    L('<p>You can send the address to yourself first, then open it on your computer. Thank you!</p></div>',
+      '<p>可以先把网址发给自己（例如微信的“文件传输助手”），再在电脑上打开。谢谢！</p></div>');
+  // 「复制网址」：先选中网址框里的文字用 execCommand 复制（微信等内置浏览器也支持），不行再用 navigator.clipboard，
+  // 都不行就请参与者长按网址自己复制。用 document 上的委托监听（不用行内 onclick）；只在手机上挂
+  if (IS_MOBILE) {
+    document.addEventListener('click', (ev) => {
+      const btn = ev.target && ev.target.closest ? ev.target.closest('#copy-url') : null;
+      const box = document.getElementById('share-url');
+      if (!btn || !box) return;
+      const show = (ok) => {
+        btn.textContent = ok ? L('Copied', '已复制') : L('Please press and hold the address to copy it', '请长按上面的网址复制');
+      };
+      let ok = false;
+      try { box.focus(); box.select(); box.setSelectionRange(0, box.value.length); ok = document.execCommand('copy'); }
+      catch (e) { ok = false; }
+      if (ok) { show(true); return; }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(box.value).then(() => show(true), () => show(false));
+      } else show(false);
+    });
+  }
 
   /* ------------------------------------------------ 时间线 */
   const timeline = [];
@@ -430,10 +476,11 @@
         '<p>浏览器窗口太小，无法进行本研究。请把窗口放大（至少 <span id="browser-check-min-width"></span> × ' +
         '<span id="browser-check-min-height"></span> 像素；目前 <span id="browser-check-actual-width"></span> × ' +
         '<span id="browser-check-actual-height"></span>）。全屏模式（F11；Mac 上按 Control-Command-F）通常有帮助。</p>'),
+      // 手机（10-09）：不先出「窗口太小、请放大」页（手机放不大），直接显示「请在电脑上完成」页
+      allow_window_resize: !IS_MOBILE,
       inclusion_function: (d) => d.mobile === false,
       exclusion_message: (d) => (d.mobile
-        ? L('<p>This study needs a laptop or desktop computer. Please open the link on a computer. Thank you!</p>',
-          '<p>本研究需要用电脑（台式或笔记本）完成。请在电脑上打开链接。谢谢！</p>')
+        ? phonePageHTML()
         : L('<p>Your browser window is too small to show the images at the required size. Please open the link on a ' +
           'computer with a larger screen. Thank you!</p>',
           '<p>浏览器窗口太小，无法按要求的尺寸显示图片。请在屏幕更大的电脑上打开链接。谢谢！</p>')),
@@ -604,13 +651,13 @@
 
   timeline.push({
     type: jsPsychHtmlButtonResponse,
-    stimulus: L('<div class="instr"><h3>Almost done</h3><p>You will now see ' + template.natural.length +
-      ' images, each showing a longer stretch of a winding shape. Imagine each image as a river seen from above. ' +
-      'All images are drawn in the same simple style, so please judge only the shape of its bends.</p>' +
-      '<p class="nat-key">For each one, please rate <b>how much it looks like a natural river</b>.</p></div>',
-      '<div class="instr"><h3>快结束了</h3><p>接下来是 ' + template.natural.length + ' 张图，每张显示蜿蜒形状更长的一段。' +
-      '请把每张图想象成从高空俯瞰的一条河。所有图都画成同样简单的样式，请只看河道弯曲的形状。</p>' +
-      '<p class="nat-key">请对每张打分：<b>它有多像一条自然的河流</b>。</p></div>'),
+    // 10-09：删去「每张显示蜿蜒形状更长的一段」（透露这些图与前面的图的关系）
+    stimulus: L('<div class="instr"><h3>Almost done</h3><p>Finally, ' + template.natural.length + ' more images. ' +
+      'Imagine each one as a river seen from above, and look only at the shape of its bends.</p>' +
+      '<p class="nat-key">Please rate <b>how much it looks like a natural river</b>.</p></div>',
+      '<div class="instr"><h3>快结束了</h3><p>最后还有 ' + template.natural.length + ' 张图。' +
+      '请把每张图想象成从高空往下看到的一条河，只看它弯曲的形状。</p>' +
+      '<p class="nat-key">请评一评：<b>它有多像一条自然形成的河流</b>。</p></div>'),
     choices: L(['Continue'], ['继续']), data: { task: 'natural_intro' },
     // 10-03：「继续」3 秒后才可点，免得把这一页当作又一个过渡页直接点过去（文字不变）
     on_load: () => {
@@ -754,25 +801,21 @@
     });
   }
 
-  // 中文版结束页：附件 03 第七节的中文结束页（繁转简），其中「各子研究在此寫明其具體問題與刺激來源」一处按英文版 S2 的说明译出
+  // 结束页（10-09 改写）：标题「谢谢您的参与」；附件 03 第七节要求写明的具体问题与刺激来源，用两三句话交代，并说明为什么
+  // 很多图片彼此相像；「没有误导、除注意检查外没有隐藏测量」与联系方式照旧
   const debrief = ZH
-    ? '<h3>这项研究想了解什么</h3>' +
-      '<p>感谢您的参与。这项研究想了解的是：同一张图片，只呈现其中不同的部分时，人们觉得好看的程度会改变多少。我们关心的' +
-      '不是哪一张更好看，而是同一个对象的不同呈现之间，评分差异有多大。图片由描述自然河流形状的数学曲线生成，取景按固定' +
-      '规则放置。所以很多张看起来很像：它们是同一条曲线的不同取景。最后我们请您评价那些较长的形状有多像自然的河流，是为了' +
-      '核对这些曲线确实如设计的那样在这方面有所不同。</p>' +
-      '<p>研究中没有任何误导，除开头说明过的注意检查外没有隐藏的测量。如有任何疑问，或希望了解研究结果，欢迎联系：何彩虹　' +
-      cfg.contact_email + '</p>'
-    : '<h3>What this study was about</h3>' +
-    '<p>Thank you for taking part. We are studying whether some shapes are judged more <b>consistently</b> ' +
-    'than others — that is, whether they look about equally beautiful whichever part of them you see. The ' +
-    'images were generated by computer from mathematical curves of the kind used to describe the shapes of ' +
-    'natural rivers, and the frames were placed on those curves by a fixed rule. This is why many images ' +
-    'looked similar: they show the same curve through different frames. At the end we asked how much the ' +
-    'whole shapes look like a natural river, to check that the curves differ in that respect as intended.</p>' +
-    '<p>Nothing in the study was misleading, and there were no hidden measures other than the attention ' +
-    'checks described at the start. If you have questions, or would like to hear about the results, please ' +
-    'write to ' + cfg.contact_email + '.</p>';
+    ? '<h3>谢谢您的参与</h3>' +
+      '<p>这项研究想了解：同一幅画面，看到的部分不同，人们觉得它好看的程度会不会跟着变。' +
+      '所以不少图片彼此相像——它们是从同一个形状上截取的不同部分。这些形状是电脑仿照河流弯曲的样子画出来的。</p>' +
+      '<p>研究中没有任何误导；除了开头说明过的注意检查，没有别的隐藏测量。' +
+      '如有疑问，或想了解研究结果，欢迎写信给何彩虹（' + cfg.contact_email + '）。</p>'
+    : '<h3>Thank you for taking part</h3>' +
+    '<p>This study asks whether people’s liking of a picture changes depending on which part of it they see. ' +
+    'That is why many images looked alike: they are different parts of the same shapes, drawn by computer to ' +
+    'resemble the bends of rivers.</p>' +
+    '<p>Nothing in the study was misleading, and there were no hidden measures other than the attention checks ' +
+    'described at the start. If you have questions or would like to hear about the results, please write to ' +
+    'Caihong He (' + cfg.contact_email + ').</p>';
 
   // 撤回链接：按获批的「提交後 14 日內，通過結束頁的鏈接撤回」。链接带本次会话的撤回码（session_code，随机 10 位，
   // 与任何身份信息无关），在新标签页打开 withdraw.html，由参与者确认后经 DataPipe 记录；B4 的 deid 据此剔除该会话。

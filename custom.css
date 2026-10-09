@@ -87,3 +87,10 @@ html.nat-block .jspsych-image-slider-response-container span { font-size: 100% !
 html.nat-block .instr h3 { font-size: 30px; color: #12395f; }
 .instr p.nat-key { padding: 12px 18px; font-size: 26px; font-weight: bold; color: #12395f; background: #fff;
                    border: 3px solid #2f6da3; border-radius: 8px; }
+/* 手机提示页（10-09）：网址框与「复制网址」按钮。网址框字号 16 像素，免得 iOS 点进去时自动放大页面；两侧留白。
+   网址框的选择器要压过 jsPsych 自带的 .jspsych-display-element input[type="text"]（14 像素） */
+.phone-page { padding: 0 16px; }
+.jspsych-display-element input.share-url { display: block; width: 100%; box-sizing: border-box; margin: 2px 0 10px 0; padding: 10px 12px; font-size: 16px;
+             font-family: "SFMono-Regular", Menlo, Consolas, monospace; color: #222; background: #fff; border: 1px solid #aaa;
+             border-radius: 6px; }
+.phone-page #copy-url { margin: 0; font-size: 16px; padding: 8px 20px; }
