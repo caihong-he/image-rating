@@ -51,7 +51,7 @@
           '<input id="wc" type="text" maxlength="10" autocomplete="off" spellcheck="false"></p>') +
         '<p><button id="go">Withdraw my data</button></p>' +
         '<p id="msg"></p>' +
-        '<p class="small">Researcher: Caihong He (' + esc(cfg.contact_email) + '). Ethics approval number ' +
+        '<p class="small">Contact: ' + esc(cfg.contact_email) + '. Ethics approval number ' +
         esc(cfg.ethics_ref) + ', Research Ethics Committee of the Faculty of Humanities and Arts, Macau University ' +
         'of Science and Technology.</p>',
         '<h3>撤回您的数据</h3>' +
@@ -62,7 +62,7 @@
           '<input id="wc" type="text" maxlength="10" autocomplete="off" spellcheck="false"></p>') +
         '<p><button id="go">撤回我的数据</button></p>' +
         '<p id="msg"></p>' +
-        '<p class="small">研究者：何彩虹（' + esc(cfg.contact_email) + '）。伦理批准编号 ' + esc(cfg.ethics_ref) +
+        '<p class="small">联系邮箱：' + esc(cfg.contact_email) + '。伦理批准编号 ' + esc(cfg.ethics_ref) +
         '，澳门科技大学人文艺术学院研究伦理委员会。</p>');
       document.getElementById('go').addEventListener('click', () => {
         const c = code || (document.getElementById('wc').value || '').trim();

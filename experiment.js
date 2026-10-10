@@ -61,7 +61,10 @@
   // 一部分／更长的一段」「以确认您在留意屏幕上的提示」），措辞口语化；结束页标题改为「谢谢您的参与」，具体想了解什么用
   // 两三句话交代。手机打开时不再先出「窗口太小」页，直接显示「请在电脑上完成」，附本研究网址与「复制网址」按钮。
   // 评分项、注意检查的提示、背景问项、撤回一节都不变。版本记为 2026-10-09
-  const UI_REV = '2026-10-09';
+  // 10-10 不列研究者姓名（用户 10-10 决定；按伦理委员会 10-09 的说法属细节调整，记入结题报备清单第 7 行）：同意书去掉
+  // 「研究者」一行，研究名称后注明「博士研究项目」，伦理一行写明审查的委员会；结束页与页脚只留联系邮箱，不写人名。
+  // 其余文字一字未改。版本记为 2026-10-10
+  const UI_REV = '2026-10-10';
   const LANG = P.get('lang') === 'zh' ? 'zh' : 'en';
   const ZH = LANG === 'zh';
   const L = (en, zh) => (ZH ? zh : en);
@@ -331,14 +334,15 @@
   // 改这里之前先改 `99 共用/预注册与伦理/论文B_知情同意与研究说明_v4_2026-09-30.md`。
   // 中文版（10-01）：获批附件 07 的中文版逐句繁转简（用语按内地习惯，见文件头）；各段小标题后换行
   // 10-09：研究名称与「这项研究要做什么」一段按 10-09 的措辞修改请示改写（中英同改），其余各节一字未改
+  // 10-10：表头不列研究者（不出现任何人名）；研究名称后加「博士研究项目」；「伦理批准编号」一行改为「伦理审查」，写明委员会
   const N_BREAKS = 2;
   const consentHTML = L(
     '<div class="consent-box">' +
     '<h3>Information and consent</h3>' +
-    '<p><b>Study:</b> Aesthetic evaluation of images<br>' +
-    '<b>Researcher:</b> Caihong He, PhD candidate, Faculty of Humanities and Arts, Macau University of Science and ' +
-    'Technology<br><b>Contact:</b> ' + cfg.contact_email + '<br>' +
-    '<b>Ethics approval number:</b> ' + cfg.ethics_ref + '</p>' +
+    '<p><b>Study:</b> Aesthetic evaluation of images (doctoral research project)<br>' +
+    '<b>Contact:</b> ' + cfg.contact_email + '<br>' +
+    '<b>Ethics review:</b> Research Ethics Committee of the Faculty of Humanities and Arts, Macau University of ' +
+    'Science and Technology, approval number ' + cfg.ethics_ref + '</p>' +
     '<p><b>What is this study about?</b> We want to learn how people judge whether images are beautiful. You will ' +
     'see a series of images and rate each one by your first impression. There are no right answers.</p>' +
     '<p><b>How long will it take?</b> About ' + MINUTES + ' minutes, with two optional short breaks. Please use a ' +
@@ -368,10 +372,9 @@
     'or corrected-to-normal vision; I have read and understood the above; I agree to take part.</label></p>',
     '<div class="consent-box">' +
     '<h3>研究说明与知情同意</h3>' +
-    '<p><b>研究名称：</b>图像审美评价<br>' +
-    '<b>研究者：</b>何彩虹，澳门科技大学人文艺术学院博士研究生<br>' +
+    '<p><b>研究名称：</b>图像审美评价（博士研究项目）<br>' +
     '<b>联系方式：</b>' + cfg.contact_email + '<br>' +
-    '<b>伦理批准编号：</b>' + cfg.ethics_ref + '</p>' +
+    '<b>伦理审查：</b>澳门科技大学人文艺术学院研究伦理委员会，批准编号 ' + cfg.ethics_ref + '</p>' +
     '<p><b>这项研究要做什么</b><br>我们想了解人们怎样评价图片好不好看。您将看到一系列图片，请凭第一感觉为每一张打分。' +
     '没有正确答案。</p>' +
     '<p><b>需要多久</b><br>约 ' + MINUTES + ' 分钟，中间有两次可选的休息。请使用电脑（台式或笔记本）作答。</p>' +
@@ -802,20 +805,20 @@
   }
 
   // 结束页（10-09 改写）：标题「谢谢您的参与」；附件 03 第七节要求写明的具体问题与刺激来源，用两三句话交代，并说明为什么
-  // 很多图片彼此相像；「没有误导、除注意检查外没有隐藏测量」与联系方式照旧
+  // 很多图片彼此相像；「没有误导、除注意检查外没有隐藏测量」与联系方式照旧（10-10 起不写人名，只留邮箱）
   const debrief = ZH
     ? '<h3>谢谢您的参与</h3>' +
       '<p>这项研究想了解：同一幅画面，看到的部分不同，人们觉得它好看的程度会不会跟着变。' +
       '所以不少图片彼此相像——它们是从同一个形状上截取的不同部分。这些形状是电脑仿照河流弯曲的样子画出来的。</p>' +
       '<p>研究中没有任何误导；除了开头说明过的注意检查，没有别的隐藏测量。' +
-      '如有疑问，或想了解研究结果，欢迎写信给何彩虹（' + cfg.contact_email + '）。</p>'
+      '如有疑问，或想了解研究结果，欢迎写信至 ' + cfg.contact_email + '。</p>'
     : '<h3>Thank you for taking part</h3>' +
     '<p>This study asks whether people’s liking of a picture changes depending on which part of it they see. ' +
     'That is why many images looked alike: they are different parts of the same shapes, drawn by computer to ' +
     'resemble the bends of rivers.</p>' +
     '<p>Nothing in the study was misleading, and there were no hidden measures other than the attention checks ' +
     'described at the start. If you have questions or would like to hear about the results, please write to ' +
-    'Caihong He (' + cfg.contact_email + ').</p>';
+    cfg.contact_email + '.</p>';
 
   // 撤回链接：按获批的「提交後 14 日內，通過結束頁的鏈接撤回」。链接带本次会话的撤回码（session_code，随机 10 位，
   // 与任何身份信息无关），在新标签页打开 withdraw.html，由参与者确认后经 DataPipe 记录；B4 的 deid 据此剔除该会话。
@@ -837,10 +840,10 @@
     cfg.contact_email + ', quoting your withdrawal code <span class="wcode">' + sessionCode + '</span> (please note ' +
     'it down). After 14 days the data are de-identified and may already be part of the analysis, so we will not be ' +
     'able to locate your individual record.</p>');
-  const ethicsNote = L('<p class="small">Researcher: Caihong He (' + cfg.contact_email + '). This study was reviewed ' +
+  const ethicsNote = L('<p class="small">Contact: ' + cfg.contact_email + '. This study was reviewed ' +
     'and approved by the Research Ethics Committee of the Faculty of Humanities and Arts, Macau University of ' +
     'Science and Technology (approval number ' + cfg.ethics_ref + ').</p>',
-    '<p class="small">研究者：何彩虹（' + cfg.contact_email + '）。本研究经澳门科技大学人文艺术学院研究伦理委员会审查，' +
+    '<p class="small">联系邮箱：' + cfg.contact_email + '。本研究经澳门科技大学人文艺术学院研究伦理委员会审查，' +
     '批准编号 ' + cfg.ethics_ref + '。</p>');
 
   timeline.push({
