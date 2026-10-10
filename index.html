@@ -5,8 +5,33 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex, nofollow">
   <title>Image rating study</title>
-  <link rel="stylesheet" href="lib/jspsych-8.3.0.css">
+  <link rel="stylesheet" href="lib/jspsych-8.3.0-nofonts.css">
   <link rel="stylesheet" href="custom.css">
+</head>
+<body>
+  <!-- 2026-10-10b：先显示「正在加载」，再下载程序文件（以前程序文件都在 <head> 里，网速慢时要等它们全部下载完才显示，
+       参与者看到的是一片空白）。程序一开始就自动移除；30 秒仍未开始则提示刷新（例如网络中途断了） -->
+  <div id="boot" style="max-width:640px;margin:18vh auto 0;padding:0 16px;font-size:18px;line-height:1.7;text-align:center;color:#444">
+    正在加载，请稍候……<br><span lang="en" style="color:#777">Loading, please wait…</span>
+  </div>
+  <script>
+  (function () {
+    var boot = document.getElementById('boot');
+    var slow = setTimeout(function () {
+      if (boot.isConnected) {
+        boot.insertAdjacentHTML('beforeend', '<p style="margin-top:28px">如果一直停在这里，请刷新本页面；仍不行，请稍后再试。<br>' +
+          '<span lang="en" style="color:#777">If this page stays like this, please reload it, or try again later.</span></p>');
+      }
+    }, 30000);
+    new MutationObserver(function (_, obs) {
+      if (!boot.isConnected || document.getElementById('jspsych-content')) {
+        if (boot.isConnected) boot.remove();
+        clearTimeout(slow);
+        obs.disconnect();
+      }
+    }).observe(document.body, { childList: true, subtree: true });
+  })();
+  </script>
   <script src="lib/jspsych-8.3.0.min.js"></script>
   <script src="lib/plugin-image-slider-response-2.1.0.min.js"></script>
   <script src="lib/plugin-html-button-response-2.1.0.min.js"></script>
@@ -17,8 +42,6 @@
   <script src="lib/plugin-call-function-2.1.0.min.js"></script>
   <script src="lib/plugin-pipe-0.6.0.min.js"></script>
   <script src="config.js"></script>
-</head>
-<body>
   <script src="experiment.js"></script>
 </body>
 </html>
