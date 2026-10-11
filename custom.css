@@ -94,3 +94,14 @@ html.nat-block .instr h3 { font-size: 30px; color: #12395f; }
              font-family: "SFMono-Regular", Menlo, Consolas, monospace; color: #222; background: #fff; border: 1px solid #aaa;
              border-radius: 6px; }
 .phone-page #copy-url { margin: 0; font-size: 16px; padding: 8px 20px; }
+/* 10-10c 保存提示：背景问项页「继续」上方的预告；保存页大字加转圈；想关页时亮出「还在保存」 */
+.save-note { margin: 18px 0 2px 0; padding: 8px 12px; text-align: left; font-size: 16px; line-height: 1.5; color: #222;
+             background: #fff3bf; border-left: 6px solid #e8590c; }
+.saving { max-width: 640px; margin: 14vh auto 0 auto; padding: 0 16px; text-align: center; }
+.saving h3 { margin: 20px 0 10px 0; font-size: 28px; color: #12395f; }
+.saving p { font-size: 18px; line-height: 1.6; }
+.saving .spinner { width: 46px; height: 46px; margin: 0 auto; box-sizing: border-box; border: 5px solid #c9d6e3;
+                   border-top-color: #2f6da3; border-radius: 50%; animation: saving-spin 0.9s linear infinite; }
+.saving p.saving-wait { font-weight: bold; color: #c92a2a; }
+@keyframes saving-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .saving .spinner { animation-duration: 2.4s; } }

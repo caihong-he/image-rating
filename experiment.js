@@ -66,7 +66,10 @@
   // 其余文字一字未改。版本记为 2026-10-10
   // 10-10b 页面加载提速（参与者反映大陆版打开一片空白）：样式表换成去掉内嵌字体的版本（412 KB → 6 KB，英文改用系统字体），
   // 入口页先显示「正在加载」再下载程序文件。参与者所见文字一字未改。版本记为 2026-10-10b
-  const UI_REV = '2026-10-10b';
+  // 10-10c 保存提示（用户担心参与者等不到「您的回答已保存」就关页）：背景问项页的「继续」上方预告要保存几秒；保存页改为
+  // 大字加转圈；保存请求进行的那几秒里关页，浏览器先弹出它自己的确认框（框里的文字由浏览器决定），页面上同时亮出
+  // 「还在保存，请再等几秒」。作答过程中与结束页上都不弹。其余文字一字未改。版本记为 2026-10-10c
+  const UI_REV = '2026-10-10c';
   const LANG = P.get('lang') === 'zh' ? 'zh' : 'en';
   const ZH = LANG === 'zh';
   const L = (en, zh) => (ZH ? zh : en);
@@ -677,6 +680,11 @@
         '这条河道的形状有多像一条自然的河流？'), NAT_LABELS, i));
   });
 
+  // 10-10c 背景问项页「继续」上方的预告（只在会保存的运行里显示；本地测试不保存，不显示）
+  const WILL_SAVE = !LOCAL && DATAPIPE_READY;
+  const SAVE_NOTE = L('<p class="save-note">After you click <b>Continue</b>, saving your responses takes a few seconds. ' +
+    'You are done when you see “Your responses have been saved.”</p>',
+    '<p class="save-note">点“继续”后需要几秒钟保存您的回答，看到“您的回答已保存”才算完成。</p>');
   const feedbackField = VERSION === 'pilot'
     ? L('<label>Was anything unclear, or did anything not work as expected? (optional)</label>',
       '<label>是否有不清楚或不如预期之处？（可不填）</label>') +
@@ -747,7 +755,7 @@
         '<label>是否曾参加过本研究（在这台或其他设备上）？</label>') +
       radios('prior', L([['no', 'No'], ['yes', 'Yes'], ['unsure', 'Not sure']],
         [['no', '否'], ['yes', '是'], ['unsure', '不确定']])) +
-      feedbackField + '</div>',
+      feedbackField + '</div>' + (WILL_SAVE ? SAVE_NOTE : ''),
     button_label: L('Continue', '继续'),
     data: { task: 'demographics' },
     on_load: () => { document.documentElement.classList.remove('nat-block'); },
@@ -757,16 +765,31 @@
      DataPipe 明确拒收〔研究已关闭、已达上限等〕时不再重试，当即说明。未存上的会话不写「已参加」标记） */
   const filename = () => VERSION + '_' + COND + '_' + (LIST ? LIST.list_id : 'na') + '_' + sessionCode + '.csv';
   let saveOK = false, saveTries = 0, saveGiveUp = false, saveFatal = false, saveCode = '';
+  // 10-10c 保存页：大字、转圈，写明通常要几秒、看到「您的回答已保存」再关闭
+  const SAVING_HTML = '<div class="saving" role="status"><div class="spinner" aria-hidden="true"></div>' +
+    L('<h3>Saving your responses…</h3><p>This usually takes a few seconds. Please keep this page open until you see ' +
+      '“Your responses have been saved.”</p><p class="saving-wait" hidden>Still saving. Please wait a few more seconds…</p>',
+      '<h3>正在保存您的回答……</h3><p>通常需要几秒钟。请不要关闭本页面，看到“您的回答已保存”后再关闭。</p>' +
+      '<p class="saving-wait" hidden>还在保存，请再等几秒……</p>') + '</div>';
+  // 10-10c 保存请求进行中想关页：浏览器先弹出它自己的确认框（框里的文字由浏览器决定，网页改不了；参与者点「离开」
+  // 照样可以关掉），页面上同时亮出「还在保存，请再等几秒」。只在保存请求进行的那几秒里有效
+  const saveGuard = (e) => {
+    const w = document.querySelector('.saving-wait');
+    if (w) w.hidden = false;
+    e.preventDefault();
+    e.returnValue = true;   // 旧版 Chrome／Edge（119 之前）要靠这一句才弹框
+  };
   if (!LOCAL && DATAPIPE_READY) {
     timeline.push({
       timeline: [
         {
           type: jsPsychCallFunction,
           async: true,
-          func: (done) => {
+          func: (finish) => {
             saveTries += 1;
-            jsPsych.getDisplayElement().innerHTML = L('<p>Saving your responses. Please do not close this page.</p>',
-              '<p>正在保存您的回答，请不要关闭本页面。</p>');
+            jsPsych.getDisplayElement().innerHTML = SAVING_HTML;
+            window.addEventListener('beforeunload', saveGuard);
+            const done = (x) => { window.removeEventListener('beforeunload', saveGuard); finish(x); };
             const csv = jsPsych.data.get().csv();
             jsPsychPipe.saveData(EXP_ID, filename(), csv).then((r) => {
               const obj = !!r && typeof r === 'object' && !(r instanceof Error);
